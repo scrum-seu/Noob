@@ -1,0 +1,20 @@
+version: '2'
+
+services:
+  db:
+    image: steveng28/mysql5:v1
+    container_name: Noobdb
+    environment:
+      - MYSQL_ROOT_PASSWORD=123
+    ports:
+      - "3306:3306"
+#    volumes:
+#      - d/SCRUM-project:/var/lib/mysql
+
+  web:
+    build: .
+    container_name: NoobWeb
+    ports:
+      - "5000:5000"
+    links:
+      - db:Noobdb
