@@ -1,0 +1,84 @@
+h1{
+    margin-left:0px;
+    font-size:125%
+}
+h2{
+    margin-left:0px;
+    font-size:125%
+}
+.left_top{
+	border-bottom:1px solid #000;
+	width:700px;
+	height:200px;
+}
+.recommend{
+	border-bottom:1px solid #000;
+	width:700px;
+	height:300px
+}
+.buy_info{
+	border-bottom:1px solid #000;
+	width:700px;
+	height:300px;
+}
+#btn{
+    position:absolute;
+    margin-left:-120px;
+    margin-top:120px
+}
+#submit{
+    position:absolute;
+    margin-left:120px;
+    margin-top:120px
+}
+#newin{
+    position:absolute;
+    margin-left:200px;
+    margin-top:12px
+}
+#reload{
+    position:absolute;
+    margin-left:245px;
+    margin-top:12px
+}
+#upload{
+    position:absolute;
+    margin-left:290px;
+    margin-top:12px
+}
+#systime{
+    position:absolute;
+    margin-left:450px;
+    margin-top:12px
+}
+#info1{
+    position:absolute;
+    margin-left:370px;
+    margin-top:12px
+}
+#userid{
+    position:absolute;
+    margin-left:700px;
+    margin-top:12px
+}
+#info2{
+    position:absolute;
+    margin-left:630px;
+    margin-top:12px
+}
+#register{
+    position:absolute;
+    margin-left:250px;
+    margin-top:-100px
+}
+#put_info{
+}
+#tabProduct{
+    position:absolute;
+    margin-left:200px;
+    margin-top:42px
+}
+
+#goods{
+    width:150px
+}
