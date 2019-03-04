@@ -18,7 +18,7 @@
 		<!--用户注册及基本信息显示-->
 		<div class="left_top">
 		<img src ="" width="200px" height="100px">
-		<input type="button" value="上传" id="btn" onclick="GetTableData()">
+		<input type="button" value="上传" id="btn">
 		<input type="button" value="注册" id="submit" onclick="onSubmit()">
 		<form id="register" name="form1" method="post">
 			<label>姓名：</label><input type="text" id="u1" name="username" placeholder="请输入姓名"><br/>
@@ -32,7 +32,7 @@
 		<form id="put_info" name="form2">
 		<input type="button" name="Submit" value="新增" onclick="AddRow(document.getElementById('tabProduct'),1)" id="newin">
 		<input type="button" name="Submit22" value="重置" onclick="window.location.reload()" id="reload">
-		<input type="submit" name="Submit3" value="提交" onclick="save_goods_info" id="upload">
+		<input type="button" name="Submit3" value="提交" onclick="GetTableData()" id="upload">
 		<label id="info1">购买时间：</label><input type="text" name="time" id="systime" onfocus=this.blur()>
 		<label id="info2">用户ID：</label><input type="text" name="user" id="userid" onfocus=this.blur()>
 		<table width="698" border="0" cellpadding="0" cellspacing="0" id="tabProduct">
