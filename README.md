@@ -10,7 +10,7 @@ database: mysql5
 ### file struction
 - Noob
   - app    //-- project folder
-    - main  //
+    - main  //-- main folder
       - DataAnalysis
       - FaceDetect  //
       - dbapi.py  // --databases operations api
