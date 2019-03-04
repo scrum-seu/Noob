@@ -40,7 +40,7 @@ function SetRowCanEdit(row){
 
        //如果当前单元格指定了编辑类型，则表示允许编辑
        //默认只有数量可编辑
-       if(j==1)
+       if(j==2)
        {
            var editType = row.cells[j].getAttribute("EditType");
            if(!editType){
