@@ -7,10 +7,10 @@ mysql_config = {
     'Database': 'mysql',
     'dataconnector': 'pymysql',
     'admin': 'root',
-    'password': '123456',
+    'password': '1234',
     'ip': 'localhost',
     'port': '3306',
-    'database': 'hhh',
+    'database': 'ScrumFaceDetect',
     'charset': 'utf8'
 }
 
