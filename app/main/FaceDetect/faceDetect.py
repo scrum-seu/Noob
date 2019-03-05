@@ -128,7 +128,7 @@ def face_token_upload(face_token):
         # 获取操作成功后faceset状态
         fsdata = json.loads(qrcont.decode('utf-8'))
         face_count = fsdata['face_count']
-        print("新用户人脸上传成功！\nfaceset中的人脸数量: " + str(face_count))
+        print("新用户人脸上传成功！\n当前faceset中的人脸数量: " + str(face_count))
         return True
 
     except urllib.error.HTTPError as e:
