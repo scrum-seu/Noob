@@ -6,6 +6,7 @@ import json
 from sqlalchemy import Column, String, create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
+from app.main.dbapi import *
 
 key = "OkAAoB2HTiLUH4q6qihRj-X5SUBgYx9R"
 secret = "DMMBpG5ADtNaSXAYGdcpEcYqHnJprVTH"
@@ -35,9 +36,10 @@ class User(Base):
 
 
 # 初始化数据库连接:
-engine = create_engine('mysql+mysqlconnector://root:123456Ys@localhost:3306/ScrumFaceDetect')
+engine = create_engine('mysql+pymysql://root:123456@localhost:3306/hhh')
 # 创建DBSession类型:
 DBSession = sessionmaker(bind=engine)
+
 
 
 def remove_face(face_t):
@@ -190,8 +192,7 @@ def face_search(filepath):
             uf = [True, True]
             return uf
 
-        min = res['thresholds']['1e-3']
-        max = res['thresholds']['1e-5']
+        m = res['thresholds']['1e-4']
         conf = res["results"][0]["confidence"]
         new_face_token = res["faces"][0]["face_token"]
         likely_face_token = res["results"][0]["face_token"]
@@ -205,7 +206,7 @@ def face_search(filepath):
         return uf
 
     else:
-        if (conf <= min):
+        if (conf <= m):
             # print("未搜索到已存在用户！\n新face_token为： " + new_face_token)
             # 上传新的face_token并保存到数据库
             flag = face_token_upload(new_face_token)
@@ -227,7 +228,7 @@ def face_search(filepath):
             session.close()
             return user_info
 
-        if (conf >= max):
+        if (conf >= m):
             # print("搜索到已存在用户！\nface_token为: " + likely_face_token)
             # =========mysql获取用户信息
             # mycursor = face_db.cursor()
@@ -308,10 +309,10 @@ def face_upload(filepath):
 
 
 def main():
-    new_face = r"/Users/yeshuai/Documents/实训/face_rec/user_face/9.jpg"
-    # face_for_search = r"/Users/yeshuai/Documents/实训/face_rec/faces_repeated/14.jpg"
-    user_info = face_search(new_face)
-    # remove_face('590ac00b69a0e4e59a7a9ad9150d1ad8')
+        new_face = r""
+    # #     # face_for_search = r"/Users/yeshuai/Documents/实训/face_rec/faces_repeated/14.jpg"
+    # #     user_info = face_search(new_face)
+    #     remove_face('8de90a36fe7e4386f5dd7c69e683fe2c')
 
 
 if __name__ == '__main__':
