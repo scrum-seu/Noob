@@ -136,7 +136,6 @@ def face_token_upload(face_token):
         return False
 
 
-
 def face_search(filepath):
     """
     新未知人脸在faceset中搜索，判断是否属于已知用户
@@ -188,7 +187,7 @@ def face_search(filepath):
 
         # 获取搜索结果
         res = json.loads(qrcont.decode('utf-8'))
-        if (len(res["faces"]) > 1):
+        if len(res["faces"]) > 1:
             uf = [True, True]
             return uf
 
@@ -201,12 +200,12 @@ def face_search(filepath):
         uf = [False, False]
         return uf
 
-    if (new_face_token == 'no'):
+    if new_face_token == 'no':
         uf = [False, False]
         return uf
 
     else:
-        if (conf <= m):
+        if conf <= m:
             # print("未搜索到已存在用户！\n新face_token为： " + new_face_token)
             # 上传新的face_token并保存到数据库
             flag = face_token_upload(new_face_token)
@@ -228,7 +227,7 @@ def face_search(filepath):
             session.close()
             return user_info
 
-        if (conf >= m):
+        if conf >= m:
             # print("搜索到已存在用户！\nface_token为: " + likely_face_token)
             # =========mysql获取用户信息
             # mycursor = face_db.cursor()
@@ -299,7 +298,7 @@ def face_upload(filepath):
     except urllib.error.HTTPError as e:
         print(e.read().decode('utf-8'))
 
-    if (face_token == 'no'):
+    if face_token == 'no':
         print('人脸检测失败!')
         return False
     else:
