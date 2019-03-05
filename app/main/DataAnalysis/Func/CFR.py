@@ -181,17 +181,3 @@ def getRecommendedItems(prefs, itemMatch, row_name):
     rankings.reverse()
     return rankings
 
-
-# In[9]:
-
-
-if __name__ == "__main__":  # 只有在执行当前模块时才会运行此函数
-    # 利用相似人推荐相似物品
-    rankings = getRecommendations(prefs, 'name7')
-    print(rankings)  # 打印推荐排名
-    # 利用相似物品推荐相似物品
-    itemMatch = calculateSimilarItems(prefs)  # 提前计算所有物品的相似物品
-    rankings = getRecommendedItems(prefs, itemMatch, 'name7')
-    print(rankings)  # 打印推荐排名
-
-# In[ ]:
