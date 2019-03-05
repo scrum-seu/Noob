@@ -23,6 +23,21 @@ def query_user(biomarker=""):
     return users
 
 
+def query_user_by_userid(user_id=-1):
+    """
+    根据用户id，查找用户, user_id = -1 返回所有用户
+    :param user_id:
+    :return:
+    """
+    session = get_session()
+    if -1 != user_id:
+        users = session.query(User).filter(User.user_id == user_id).one()
+    else:
+        users = session.query(User).all()
+    session.close()
+    return users
+
+
 def add_user(biomarker, name=None, sex=None, age=None, occupation=None, phone_num=None,
              other1=None, other2=None, other3=None):
     """
