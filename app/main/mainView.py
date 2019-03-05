@@ -49,8 +49,8 @@ def upload_test():
                 return "照片中人脸多于1张，请重新拍摄！"
             else:
                 # 找到了已经注册的用户
-                return "\n搜索到已存在用户！\n该用户信息为 user_id: %s\n           name: %s\n" \
-                      "           gender: %s\n           age: %s\n           phone_number: %s" \
+                return "\n搜索到已存在用户！\n该用户信息为 user_id:%s\n           name:%s\n" \
+                      "           gender:%s\n           age:%s\n           phone_number:%s" \
                       % (user_info[2], user_info[3], user_info[4], user_info[5], user_info[6])
 
         elif(user_info[1]):
@@ -68,6 +68,13 @@ def upload_test():
 
 '''
 1.注册信息接收
+格式：  data = {
+        "userid": userid,
+        "username": name,
+        "usersex": sex,
+        "userage": age,
+        "usernumber":number
+    };
 2.查询商品信息和价格发送给前台
 '''
 @app.route('/login', methods=["GET", "POST"])
@@ -89,7 +96,6 @@ def login():
     for i in range(goodnum):
         new.append(" ".join(testlist[i]))
     final = " ".join(new)
-    print(final)
     if request.method == "POST":
         data = request.get_json()
         for key in data:
