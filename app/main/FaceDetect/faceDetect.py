@@ -312,7 +312,7 @@ def main():
         new_face = r""
     # #     # face_for_search = r"/Users/yeshuai/Documents/实训/face_rec/faces_repeated/14.jpg"
     # #     user_info = face_search(new_face)
-    #     remove_face('8de90a36fe7e4386f5dd7c69e683fe2c')
+    #     remove_face('6adff42f2f9396cfd6fc720e70946dad')
 
 
 if __name__ == '__main__':
