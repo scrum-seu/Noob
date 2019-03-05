@@ -28,7 +28,6 @@ def obtain_prefs(user_id):
     else:
         purchase_history_list = query_purchase_history_orderby_purchase_date()
         prefs = {}
-        purchase_frequency = {}
         purchase_times = {}
         prev = Purchase_history()
         for item in purchase_history_list:

@@ -3,7 +3,6 @@
 
 # In[1]:
 
-
 from math import sqrt
 
 
