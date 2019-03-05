@@ -93,8 +93,10 @@ def query_goods(good_id=-1):
     :return:
     """
     session = get_session()
-    return session.query(Goods).all() if -1 == good_id \
+    goods = session.query(Goods).all() if -1 == good_id \
         else session.query(Goods).filter(Goods.good_id == good_id).one()
+    session.close()
+    return goods
 
 
 def add_goods(name, price, other1=None, other2=None):
@@ -165,9 +167,23 @@ def query_purchase_history(history_id=-1):
     :return:
     """
     session = get_session()
-    return session.query(Purchase_history).all() if -1 == history_id \
+    histories = session.query(Purchase_history).all() if -1 == history_id \
         else session.query(Purchase_history).filter(
         Purchase_history.history_id == history_id).one()
+    session.close()
+    return histories
+
+
+def query_purchase_history_orderby_purchase_date():
+    """
+    按购买日期返回所有购买记录
+    :param:none
+    :return:
+    """
+    session = get_session()
+    histories = session.query(Purchase_history).order_by(Purchase_history.purchase_date.desc()).all()
+    session.close()
+    return histories
 
 
 def add_purchase_history(user_id, good_id, count, total_price, purchase_date, other1=None,
