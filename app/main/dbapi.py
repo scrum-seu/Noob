@@ -230,5 +230,5 @@ def delete_purchase_history(history_id):
 
 if __name__ == "__main__":
     # add_purchase_history(1, 2, 3, "4", "2019-8-8", "test")
-    h = [h for h in query_purchase_history() if h.other1 == "test"]
+    # h = [h for h in query_purchase_history() if h.other1 == "test"]
     print(h[0].purchase_date)

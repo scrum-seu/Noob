@@ -3,6 +3,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from config import mysql_config
 
+
 # 创建对象的基类:
 Base = declarative_base()
 
@@ -107,10 +108,12 @@ def get_session():
     :return: session会话
     """
     SQLALCHEMY_DATABASE_URI = \
-    mysql_config['Database'] + '+' + mysql_config['dataconnector'] + '://' +\
-    mysql_config['admin'] + ':' + mysql_config['password'] + '@' +\
-    mysql_config['ip'] + ':' + mysql_config['port'] + '/' +\
-    mysql_config['database'] + '?charset=' + mysql_config['charset']
+        mysql_config['Database'] + '+' + mysql_config['dataconnector'] + '://' + \
+        mysql_config['admin'] + ':' + mysql_config['password'] + '@' + \
+        mysql_config['ip'] + ':' + mysql_config['port'] + '/' + \
+        mysql_config['database'] + '?charset=' + mysql_config['charset']
+
+
 
     engine = create_engine(SQLALCHEMY_DATABASE_URI)
     DBSession = sessionmaker(bind=engine)

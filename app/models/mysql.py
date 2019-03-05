@@ -7,8 +7,15 @@ DEBUG = True
 
 _author = "Noob"
 
+# db_config = {
+#   "host": "10.6.207.166",
+#   "port": 3306,
+#   "user": "root",
+#   "passwd": "123456Ys",
+#    "database": "ScrumFaceDetect",
+# }
 db_config = {
-  "host": "10.6.207.166",
+  "host": "1ocalhost",
   "port": 3306,
   "user": "root",
   "passwd": "123456Ys",

@@ -7,12 +7,13 @@ mysql_config = {
     'Database': 'mysql',
     'dataconnector': 'pymysql',
     'admin': 'root',
-    'password': '123456',
+    'password': '123456Ys',
     'ip': 'localhost',
     'port': '3306',
-    'database': 'hhh',
+    'database': 'ScrumFaceDetect',
     'charset': 'utf8'
 }
+
 
 
 class Config(object):   # 所有配置类的父类，通用的配置写在这里
@@ -27,19 +28,17 @@ class Config(object):   # 所有配置类的父类，通用的配置写在这里
 class DevelopmentConfig(Config):    # 开发环境配置类
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = \
-        "mysql+pymysql://root:123456Ys@10.6.207.166:3306/ScrumFaceDetect?charset=utf8"
+        "mysql+mysqlconnector://root:123456Ys@localhost:3306/ScrumFaceDetect"
 
 
 class TestingConfig(Config):    # 测试环境配置类
     TESTING = True
     SQLALCHEMY_DATABASE_URI = \
-        "mysql+pymysql://ScrumFaceDetect:root@10.6.207.166:3306/ScrumFaceDetect"
-
+        "mysql+mysqlconnector://root:123456Ys@localhost:3306/ScrumFaceDetect"
 
 class ProductionConfig(Config):     # 生产环境配置类
     SQLALCHEMY_DATABASE_URI = \
-        "mysql+pymysql://ScrumFaceDetect:root@10.6.207.166:3306/ScrumFaceDetect"
-
+        "mysql+pymysql://root:123456Ys@10.6.207.166:3306/ScrumFaceDetect?charset=utf8"
 
 config = {  # config字典注册了不同的配置，默认配置为开发环境，本例使用开发环境
     'development': DevelopmentConfig,
