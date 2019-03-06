@@ -19,7 +19,6 @@ function getNowFormatDate() {
             + " " + date.getHours() + seperator2 + date.getMinutes()
             + seperator2 + date.getSeconds();
     document.getElementById("systime").value = currentdate;
-    document.getElementById("userid").value = "123456";
 }
 //设置多个表格可编辑
 function EditTables(){
@@ -182,15 +181,25 @@ function ClearChild(element){
 
 //添加行同时为商品和单价字段赋值
 function AddRow(table, index){
+    var obj = document.getElementById("telUserName"); //定位id
+    var index = obj.selectedIndex; // 选中索引
+    var text = obj.options[index].text; // 选中文本
+    if(text=="")
+    {
+        alert("请选中商品：")
+        return 0;
+    }
+    if(document.getElementById("userid").value=="")
+    {
+        alert("用户不存在,请检查:")
+        return 1;
+    }
     var lastRow = table.rows[table.rows.length-1];
     var newRow = lastRow.cloneNode(true);
     //计算新增加行的序号，需要引入jquery 的jar包
     var startIndex = $.inArray(lastRow,table.rows);
     var endIndex = table.rows;
      table.tBodies[0].appendChild(newRow);
-    var obj = document.getElementById("telUserName"); //定位id
-    var index = obj.selectedIndex; // 选中索引
-    var text = obj.options[index].text; // 选中文本
     var arr2=text.split(":");
     newRow.cells[0].innerHTML=arr2[0];
     //数量默认为1
@@ -252,7 +261,14 @@ rowData[name] = value1;
 return rowData;
 
 }
-
+function deleteRow()
+{
+    var tab = document.getElementById("tabProduct") ;
+    //表格行数
+    var rows = tab.rows.length ;
+    for(i=1;i<rows;i++)
+        document.getElementById('tabProduct').deleteRow(1);
+}
 //检查当前数据行中需要运行的字段
 function CheckExpression(row){
 for(var j=0;j<row.cells.length; j++){

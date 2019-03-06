@@ -4,13 +4,24 @@
 */
 //提交注册信息，接收商品名称及价格
 function onSubmit(){
-var name = document.getElementById("u1").value;
-var age = document.getElementById("u2").value;
-var call = document.getElementById("u3").value;
+var userid = document.getElementById("u_userid").value;
+var name = document.getElementById("u_name").value;
+if(userid==""||name=="")
+{
+    alert("用户信息为空请检查！")
+    return 0;
+}
+
+document.getElementById("userid").value=userid;
+var sex = document.getElementById("u_sex").value;
+var age = document.getElementById("u_age").value;
+var number = document.getElementById("u_number").value;
     var data = {
+        "userid": userid,
         "username": name,
+        "usersex": sex,
         "userage": age,
-        "usernumber":call
+        "usernumber":number
     };
 
     $.ajax({
@@ -19,17 +30,6 @@ var call = document.getElementById("u3").value;
         data: JSON.stringify(data),
         contentType: 'application/json',
         success: function(data){
-        var arr1=data.split(" ");
-        var obj=document.getElementById("telUserName");
-        var j=1;
-        for(var i=0;i<arr1.length;i++){
-            if(i%3==0)
-            {
-                obj.options[j]=new Option((arr1[i]+":"+arr1[i+1]+":"+arr1[i+2]),"新值");
-                j=j+1;
-            }
-        }
-        getNowFormatDate();
         },
         error: function(jqXHR){console.log(jqXHR)},
     })

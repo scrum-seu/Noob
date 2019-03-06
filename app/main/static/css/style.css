@@ -1,84 +1,104 @@
 h1{
     margin-left:0px;
-    font-size:125%
+    font-size:125%;
 }
 h2{
     margin-left:0px;
-    font-size:125%
+    font-size:125%;
 }
 .left_top{
 	border-bottom:1px solid #000;
-	width:700px;
-	height:200px;
-}
-.recommend{
-	border-bottom:1px solid #000;
-	width:700px;
-	height:300px
+    position:absolute;
+    margin-left:200px;
+    margin-top:0px;
+	width:1000px;
+	height:250px;
 }
 .buy_info{
-	border-bottom:1px solid #000;
-	width:700px;
+    position:absolute;
+    margin-left:200px;
+    margin-top:200px;
+	width:1000px;
+	height:350px;
+}
+.recommend{
+	border-top:1px solid #000;
+    position:absolute;
+    margin-left:200px;
+    margin-top:600px;
+	width:1000px;
 	height:300px;
 }
 #btn{
     position:absolute;
     margin-left:-120px;
-    margin-top:120px
+    margin-top:120px;
 }
 #submit{
     position:absolute;
-    margin-left:120px;
-    margin-top:120px
+    margin-left:380px;
+    margin-top:-30px;
 }
 #newin{
     position:absolute;
-    margin-left:200px;
-    margin-top:12px
+    margin-left:300px;
+    margin-top:12px;
 }
 #reload{
+    width:100px;
     position:absolute;
-    margin-left:245px;
-    margin-top:12px
+    margin-left:355px;
+    margin-top:12px;
 }
-#upload{
+#flush_info{
     position:absolute;
-    margin-left:290px;
-    margin-top:12px
+    margin-left:510px;
+    margin-top:610px;
+    width:80px;
+}
+#upload1{
+    position:absolute;
+    margin-left:465px;
+    margin-top:12px;
 }
 #systime{
     position:absolute;
-    margin-left:450px;
-    margin-top:12px
+    margin-left:575px;
+    margin-top:12px;
 }
 #info1{
     position:absolute;
-    margin-left:370px;
-    margin-top:12px
+    margin-left:525px;
+    margin-top:12px;
 }
 #userid{
     position:absolute;
-    margin-left:700px;
-    margin-top:12px
+    margin-left:810px;
+    margin-top:12px;
 }
 #info2{
     position:absolute;
-    margin-left:630px;
-    margin-top:12px
+    margin-left:770px;
+    margin-top:12px;
 }
 #register{
     position:absolute;
     margin-left:250px;
-    margin-top:-100px
+    margin-top:-175px;
 }
 #put_info{
 }
 #tabProduct{
     position:absolute;
-    margin-left:200px;
-    margin-top:42px
+    margin-left:300px;
+    margin-top:42px;
 }
-
 #goods{
-    width:150px
+    width:150px;
+}
+#GetRecom_info{
+    background-color: #7ED321;
+    color: #FFFFFF;
+}
+#u1{
 }

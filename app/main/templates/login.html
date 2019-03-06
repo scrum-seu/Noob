@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title>编辑表格数据</title>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
@@ -11,6 +12,28 @@
     <script language="javascript">
         var tabProduct1 = document.getElementById("tabProduct");
         EditTables(tabProduct1);
+    </script>
+    <script>
+         $(function () {
+                $.ajax({
+                    type: 'POST',
+                    url: '/init',
+                    contentType: 'application/json',
+                    success: function(data){
+                        var arr1=data.split(" ");
+                        var obj=document.getElementById("telUserName");
+                        var j=1;
+                        for(var i=0;i<arr1.length;i++){
+                            if(i%3==0)
+                            {
+                                obj.options[j]=new Option((arr1[i]+":"+arr1[i+1]+":"+arr1[i+2]),"新值");
+                                j=j+1;
+                            }
+                        }
+                    },
+                    error: function(jqXHR){console.log(jqXHR)},
+                })
+        });
     </script>
 </head>
 
@@ -25,9 +48,11 @@
     <input type="button" value="注册" id="submit" onclick="onSubmit()">
     <label id="msg"></label>
     <form id="register" name="form1" method="post">
-        <label>姓名：</label><input type="text" id="u1" name="username" placeholder="请输入姓名"><br/>
-        <label>年龄：</label><input type="text" id="u2" name="userage" placeholder="请输入年龄"><br/>
-        <label>电话：</label><input type="text" id="u3" name="usernumber" placeholder="请输入电话"><br/>
+			<label>编号：</label><input style="width:250px" type="text" id="u_userid" name="userbioflag" placeholder="用户user_id"><br/>
+			<label>姓名：</label><input style="width:250px" type="text" id="u_name" name="username" placeholder="请输入姓名"><br/>
+			<label>性别：</label><input style="width:250px" type="text" id="u_sex" name="usersex" placeholder="请输入性别"><br/>
+			<label>年龄：</label><input style="width:250px" type="text" id="u_age" name="userage" placeholder="请输入年龄"><br/>
+			<label>电话：</label><input style="width:250px" type="text" id="u_number" name="usernumber" placeholder="请输入电话"><br/>
     </form>
     <script>
         var t;
@@ -108,7 +133,48 @@
                         },
                         dataType: 'text',
                         success: function (data) {
-                            $('#msg').text(data);
+                            getNowFormatDate();
+                            document.getElementById("detectinfo").value=data;
+                            var arr=data.split("\n");
+                            // length=7,检测到已注册用户
+                            if (arr.length==7)
+                            {
+                                alert("已注册用户");
+                                var arr_id=arr[2].split(":");
+                                var arr_name=arr[3].split(":");
+                                var arr_gender=arr[4].split(":");
+                                var arr_age=arr[5].split(":");
+                                var arr_number=arr[6].split(":");
+                                document.getElementById("u_userid").value=arr_id[1];
+                                document.getElementById("userid").value=arr_id[1];
+                                document.getElementById("u_name").value=arr_name[1];
+                                document.getElementById("u_sex").value=arr_gender[1];
+                                document.getElementById("u_age").value=arr_age[1];
+                                document.getElementById("u_number").value=arr_number[1];
+                            }
+                            else
+                            {
+                                // length=4,新用户仅返回用户id
+                                if(arr.length==4)
+                                {
+                                    alert("新用户");
+                                     document.getElementById("userid").value=arr_id[1];
+                                }
+                                // length=1,人脸检测失败！ 请检查网络连接和照片是否包含人脸。
+                                else
+                                {
+                                    if(arr.length==1)
+                                    {
+                                        alert("人脸检测失败!");
+                                        document.getElementById("u_userid").value="";
+                                        document.getElementById("userid").value="";
+                                        document.getElementById("u_name").value="";
+                                        document.getElementById("u_sex").value="";
+                                        document.getElementById("u_age").value="";
+                                        document.getElementById("u_number").value="";
+                                    }
+                                }
+                            }
                         },
                         error: function (e) {
                         }
@@ -146,11 +212,11 @@
     <form id="put_info" name="form2">
         <input type="button" name="Submit" value="新增" onclick="AddRow(document.getElementById('tabProduct'),1)"
                id="newin">
-        <input type="button" name="Submit22" value="重置" onclick="window.location.reload()" id="reload">
-        <input type="button" name="Submit3" value="提交" onclick="GetTableData()" id="upload">
-        <label id="info1">购买时间：</label><input type="text" name="time" id="systime" onfocus=this.blur()>
-        <label id="info2">用户ID：</label><input type="text" name="user" id="userid" onfocus=this.blur()>
-        <table width="698" border="0" cellpadding="0" cellspacing="0" id="tabProduct">
+        <input type="button" name="Submit22" value="清空购物信息" onclick="deleteRow()" id="reload">
+        <input type="button" name="Submit3" value="提交" onclick="GetTableData()" id="upload1">
+        <label id="info1">时间：</label><input type="text" name="time" id="systime" onfocus=this.blur()>
+        <label id="info2">ID：</label><input type="text" name="user" id="userid" onfocus=this.blur()>
+        <table width="698" border="0" cellpadding="0" cellspacing="0" id="tabProduct" style="overflow: scroll;">
             <tr>
                 <td width="50" bgcolor="#EFEFEF" Name="good_id" EditType="TextBox">商品ID</td>
                 <td width="200" bgcolor="#EFEFEF" Name="good_name" EditType="TextBox">商品</td>
@@ -160,14 +226,12 @@
         </table>
     </form>
 </div>
-<!--商品信息选择下拉框-->
-<select id="telUserName" onchange="putValueToInput()"
-        style="width:180px;height:28px;position: absolute;left: 0px;top: 270px; ">
-</select>
-<input type="text" name="input" placeholder="-请选择-" id="input" onblur="inputValue()"
-       style="width:158px; height: 22px; position: absolute;left: 0px;top: 270px; "/>
-<div class="top" style="width:180px;border:1px solid #ccc;display:none;position: absolute;left: 0px;top: 298px; "
-     id="DIV">
+    <!--商品信息选择下拉框-->
+    <select  id="telUserName"  onchange="putValueToInput()" style="width:280px;height:28px;position: absolute;left: 208px;top: 270px; ">
+    </select>
+    <input  type="text" name="input"  placeholder="-请选择-" id="input" onblur="inputValue()"
+            style="width:258px; height: 22px; position: absolute;left: 208px;top: 270px; "/>
+    <div class="top" style="width:280px;border:1px solid #ccc;display:none;position: absolute;left: 208px;top: 298px; " id="DIV">
 </div>
 <!--用户推荐信息模块-->
 <div class="recommend">
@@ -176,7 +240,9 @@
     <form id="rec_info" name="form3" method="post">
         <textarea name="recom" style="width:300px;height:120px;">这里写内容</textarea>
     </form>
+        <label style="position: absolute;left: 600px;top: -430px;">提示信息</label>
+        <textarea id="detectinfo" name="hint" style="position: absolute;left: 600px;top: -575px;width:300px;height:120px;"></textarea>
 </div>
-
+<input type="button" name="flush" value="刷新" onclick="window.location.reload()" id="flush_info">
 </body>
 </html>

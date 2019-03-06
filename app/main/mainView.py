@@ -8,12 +8,39 @@ import base64
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = timedelta(seconds=1)
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(seconds=1)
+
 @app.route('/')
 def demo():
     return render_template("index.html")
 
+'''
+1.调用query_goods()查询商品信息
+2.页面初始化返回返回商品信息给前台
+3.return:goodInfo
+    typr:str
+'''
 
-
+@app.route('/init', methods=["GET", "POST"])
+def init():
+    #获取id,name,price字段
+    u = [(good.good_id, good.name, good.price) for good in query_goods()]
+    goodnum = len(u)
+    testlist = []
+    #数据库字段处理，拼接字符串
+    for i in range(goodnum):
+        testlist.append([])
+        testlist[i].append(str(u[i][0]))
+        testlist[i].append(u[i][1].replace(" ", ""))
+        m = str(Decimal(u[i][2]).quantize(Decimal('0.0')))
+        testlist[i].append(m)
+    new=[]
+    for i in range(goodnum):
+        new.append(" ".join(testlist[i]))
+    goodInfo = " ".join(new)
+    if request.method == "POST":
+        return (goodInfo)
+    else:
+        return render_template("login.html")
 
 '''
 1.保存照片到本地
@@ -67,7 +94,7 @@ def upload_test():
     return ''
 
 '''
-1.注册信息接收
+1.注册信息接收/更新用户信息
 格式：  data = {
         "userid": userid,
         "username": name,
@@ -75,32 +102,27 @@ def upload_test():
         "userage": age,
         "usernumber":number
     };
-2.查询商品信息和价格发送给前台
 '''
 @app.route('/login', methods=["GET", "POST"])
 def login():
-    #获取id,name,price字段
-    u = [(good.good_id, good.name, good.price) for good in query_goods()]
-    goodnum = len(u)
-    testlist = []
-    '''
-    1.信息转换成字符串发送到前台
-    '''
-    for i in range(goodnum):
-        testlist.append([])
-        testlist[i].append(str(u[i][0]))
-        testlist[i].append(u[i][1].replace(" ", ""))
-        m = str(Decimal(u[i][2]).quantize(Decimal('0.0')))
-        testlist[i].append(m)
-    new=[]
-    for i in range(goodnum):
-        new.append(" ".join(testlist[i]))
-    final = " ".join(new)
     if request.method == "POST":
         data = request.get_json()
+        users=""
         for key in data:
-            print(key + ':' + data[key])
-        return(final)
+            #print(key + ':' + data[key])
+            if(key=="userid"):
+                users=query_user_by_userid(int(data[key]))
+        for key in data:
+            if(key=="userage"):
+                users.age=data[key]
+            if(key=="username"):
+                users.name=data[key]
+            if(key=="usersex"):
+                users.sex=data[key]
+            if(key=="usernumber"):
+                users.phone_num=data[key]
+        update_user_info(users)
+        return("success")
     else:
         return render_template("login.html")
 
@@ -146,6 +168,7 @@ def transReco():
         return ("hello")
     else:
         return render_template("login.html")
+
 if __name__ == '__main__':
     app.run(debug=True)
 
