@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
-from Func.twoD_dict import TD_dot_divide_OD, TD_dot_multiply_ZD
-from Func.CFR import *
-from Func.json_os import write_to_json
-from dbapi import query_purchase_history_orderby_purchase_date
-from models import Purchase_history
+from app.main.DataAnalysis.Func.twoD_dict import TD_dot_divide_OD, TD_dot_multiply_ZD
+from app.main.DataAnalysis.Func.CFR import *
+from app.main.DataAnalysis.Func.json_os import write_to_json
+from app.main.dbapi import query_purchase_history_orderby_purchase_date
+from app.models.models import Purchase_history
 import json
 import os
 
