@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 from flask import render_template
 from app.main.dbapi import *
+from app.main.DataAnalysis.Func.obtain_prefs import obtain_prefs
 from decimal import *
 from datetime import timedelta
 import app.main.FaceDetect.faceDetect as face
@@ -17,7 +18,7 @@ def demo():
 1.调用query_goods()查询商品信息
 2.页面初始化返回返回商品信息给前台
 3.return:goodInfo
-    typr:str
+    type:str
 '''
 
 @app.route('/init', methods=["GET", "POST"])
@@ -164,8 +165,17 @@ def transReco():
         #userid作为用户行为分析模块的入参
         for key in data:
             userid=data[key]
-        #预留调用用户分析模块
-        return ("hello")
+        reco=obtain_prefs(int(userid))
+        num = len(reco)
+        if(num==0):
+            return("0")
+        else:
+            get_reco=""
+            for i in range(5):
+                goods_info=query_goods(reco[i])
+                price=str(Decimal(goods_info.price).quantize(Decimal('0.0')))
+                get_reco=get_reco+goods_info.name+","+price+","
+            return(get_reco)
     else:
         return render_template("login.html")
 

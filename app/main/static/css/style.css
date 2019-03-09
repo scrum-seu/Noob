@@ -1,104 +1,138 @@
 h1{
-    margin-left:0px;
-    font-size:125%;
+margin-left:0px;
+font-size:125%;
 }
 h2{
-    margin-left:0px;
-    font-size:125%;
+margin-left:0px;
+font-size:125%;
 }
 .left_top{
-	border-bottom:1px solid #000;
-    position:absolute;
-    margin-left:200px;
-    margin-top:0px;
-	width:1000px;
-	height:250px;
+position:absolute;
+left:200px;
+top:0px;
+width:1000px;
+height:250px;
 }
 .buy_info{
-    position:absolute;
-    margin-left:200px;
-    margin-top:200px;
-	width:1000px;
-	height:350px;
+position:absolute;
+margin-left:250px;
+margin-top:270px;
+width:1000px;
+height:350px;
 }
 .recommend{
-	border-top:1px solid #000;
-    position:absolute;
-    margin-left:200px;
-    margin-top:600px;
-	width:1000px;
-	height:300px;
+position:absolute;
+margin-left:200px;
+margin-top:600px;
+width:1000px;
+height:300px;
+}
+#clear{
+width:70px;
+height:30px;
+line-height:10px;
+position:absolute;
+margin-left:385px;
+margin-top:12px;
 }
 #btn{
-    position:absolute;
-    margin-left:-120px;
-    margin-top:120px;
+position:absolute;
+margin-left:-120px;
+margin-top:120px;
 }
 #submit{
-    position:absolute;
-    margin-left:380px;
-    margin-top:-30px;
+position:absolute;
+margin-left:1000px;
+margin-top:220px;
 }
-#newin{
-    position:absolute;
-    margin-left:300px;
-    margin-top:12px;
+#add{
+position:absolute;
+margin-left:300px;
+margin-top:12px;
+height:30px;
+width:70px;
+line-height:10px;
 }
 #reload{
-    width:100px;
-    position:absolute;
-    margin-left:355px;
-    margin-top:12px;
+width:100px;
+position:absolute;
+margin-left:355px;
+margin-top:12px;
 }
-#flush_info{
-    position:absolute;
-    margin-left:510px;
-    margin-top:610px;
-    width:80px;
-}
-#upload1{
-    position:absolute;
-    margin-left:465px;
-    margin-top:12px;
+#save{
+position:absolute;
+margin-left:465px;
+margin-top:12px;
+height:30px;
+line-height:10px;
 }
 #systime{
-    position:absolute;
-    margin-left:575px;
-    margin-top:12px;
+position:absolute;
+margin-left:605px;
+margin-top:12px;
+height:20px;
 }
 #info1{
-    position:absolute;
-    margin-left:525px;
-    margin-top:12px;
+position:absolute;
+margin-left:555px;
+margin-top:12px;
 }
 #userid{
-    position:absolute;
-    margin-left:810px;
-    margin-top:12px;
+position:absolute;
+margin-left:810px;
+margin-top:12px;
+height:20px;
 }
 #info2{
-    position:absolute;
-    margin-left:770px;
-    margin-top:12px;
+position:absolute;
+margin-left:785px;
+margin-top:12px;
 }
 #register{
-    position:absolute;
-    margin-left:250px;
-    margin-top:-175px;
+position:absolute;
+margin-left:1000px;
+margin-top:30px;
 }
-#put_info{
+#upload{
+display:block;
+position: absolute;
+top:220px;
+height:30px;
+width:100px;
+line-height:10px;
+}
+#start{
+display:block;
+position: absolute;
+top:150px;
+height:30px;
+width:100px;
+line-height:10px;
+}
+#tp{
+display:block;
+position: absolute;
+top:185px;
+height:30px;
+width:100px;
+line-height:10px;
 }
 #tabProduct{
-    position:absolute;
-    margin-left:300px;
-    margin-top:42px;
+position:absolute;
+margin-left:300px;
+margin-top:42px;
 }
 #goods{
-    width:150px;
+width:150px;
 }
+/* 推荐&结账*/
 #GetRecom_info{
-    background-color: #7ED321;
-    color: #FFFFFF;
+height:30px;
+width:80px;
+line-height:10px;
 }
-#u1{
+#flush_info{
+height:30px;
+width:80px;
+line-height:10px;
 }
