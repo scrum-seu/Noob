@@ -87,7 +87,7 @@ def upload_test():
                    % (user_info[2])
         else:
             # 检测失败(因为各种各样的原因)
-            return "人脸检测失败！ 请检查网络连接和照片是否包含人脸。"
+            return "人脸检测失败！ 请检查控制台信息，网络连接和照片是否包含人脸。\n（或者faceset为空！\n或者为 faceset中搜索到已存在用户！数据库中未搜索到匹配用户）"
 
 
     # if request.method == 'GET':  # 当以post方式提交数据时

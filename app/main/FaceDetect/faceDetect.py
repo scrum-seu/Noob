@@ -335,12 +335,22 @@ def face_search(filepath):
             # 创建Session:
             session = DBSession()
             # 创建Query查询，filter是where条件，最后调用one()返回唯一行，如果调用all()则返回所有行:
-            user = session.query(User).filter(User.biomarker == likely_face_token).one()
-            user_info = [True, False, user.user_id, user.name, user.sex, user.age, user.phone_num]
-            print(user_info)
-            # 关闭Session:
-            session.close()
-            return user_info
+
+            try:
+                user = session.query(User).filter(User.biomarker == likely_face_token).one()
+                user_info = [True, False, user.user_id, user.name, user.sex, user.age, user.phone_num]
+                print(user_info)
+                # 关闭Session:
+                session.close()
+                return user_info
+
+            except BaseException as e:
+                print("逻辑错误！faceset中搜索到已存在用户！数据库中未搜索到匹配用户，请手动加入！")
+                uf = [False, False]
+                return uf
+
+
+
 
 
 def face_upload(filepath):
