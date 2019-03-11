@@ -3,14 +3,14 @@ import urllib.request
 import urllib.error
 import time
 import json
+from app.main.dbapi import *
 from sqlalchemy import Column, String, create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from app.main.dbapi import *
 
-key = "OkAAoB2HTiLUH4q6qihRj-X5SUBgYx9R"
-secret = "DMMBpG5ADtNaSXAYGdcpEcYqHnJprVTH"
-faceset_token = "68e72c734e103509a0928584bcdccdc2"
+key = "OCfvZCSf72p8WPptTdW_nv2rwQa10i_x"
+secret = "TATBECgI3LMRuPVLLB15GtTvpqc3pbOY"
+faceset_token = "a95b184fd0011a44b3c18d553ff677f5"
 boundary = '----------%s' % hex(int(time.time() * 1000))  # boundary为自定义的分隔符，用于分割数据
 
 # 创建对象的基类:
@@ -36,10 +36,101 @@ class User(Base):
 
 
 # 初始化数据库连接:
-engine = create_engine('mysql+pymysql://root:123456@localhost:3306/hhh')
+engine = create_engine('mysql+pymysql://root:123456Ys@localhost:3306/ScrumFaceDetect')
 # 创建DBSession类型:
 DBSession = sessionmaker(bind=engine)
 
+
+
+def create_faceset():
+    '''
+    新建faceset
+    :return:
+    '''
+    http_url = 'https://api-cn.faceplusplus.com/facepp/v3/faceset/create'
+
+    data = []
+    data.append('--%s' % boundary)
+    data.append('Content-Disposition: form-data; name="%s"\r\n' % 'api_key')
+    data.append(key)
+
+    data.append('--%s' % boundary)
+    data.append('Content-Disposition: form-data; name="%s"\r\n' % 'api_secret')
+    data.append(secret)
+
+    data.append('--%s--\r\n' % boundary)
+
+    for i, d in enumerate(data):
+        if isinstance(d, str):
+            data[i] = d.encode('utf-8')
+
+    http_body = b'\r\n'.join(data)
+    req = urllib.request.Request(url=http_url, data=http_body)
+    req.add_header('Content-Type', 'multipart/form-data; boundary=%s' % boundary)
+
+    try:
+        resp = urllib.request.urlopen(req, timeout=5)
+        qrcont = resp.read()
+        print(qrcont.decode('utf-8'))
+
+        # 获取操作成功后faceset状态
+        fsdata = json.loads(qrcont.decode('utf-8'))
+        faceset = fsdata['faceset_token']
+        print("人脸集合创建成功: " + faceset)
+        return True
+
+    except urllib.error.HTTPError as e:
+        print(e.read().decode('utf-8') + "\n人脸集合创建失败！")
+        return False
+
+def remove_all_faces():
+    '''
+    删除一个faceset中的所有人脸
+    :return: null
+    '''
+    http_url = 'https://api-cn.faceplusplus.com/facepp/v3/faceset/removeface'
+
+    data = []
+    data.append('--%s' % boundary)
+    data.append('Content-Disposition: form-data; name="%s"\r\n' % 'api_key')
+    data.append(key)
+
+    data.append('--%s' % boundary)
+    data.append('Content-Disposition: form-data; name="%s"\r\n' % 'api_secret')
+    data.append(secret)
+
+    data.append('--%s' % boundary)
+    data.append('Content-Disposition: form-data; name="%s"\r\n' % 'faceset_token')
+    data.append(faceset_token)
+
+    data.append('--%s' % boundary)
+    data.append('Content-Disposition: form-data; name="%s"\r\n' % 'face_tokens')
+    data.append("RemoveAllFaceTokens")
+
+    data.append('--%s--\r\n' % boundary)
+
+    for i, d in enumerate(data):
+        if isinstance(d, str):
+            data[i] = d.encode('utf-8')
+
+    http_body = b'\r\n'.join(data)
+    req = urllib.request.Request(url=http_url, data=http_body)
+    req.add_header('Content-Type', 'multipart/form-data; boundary=%s' % boundary)
+
+    try:
+        resp = urllib.request.urlopen(req, timeout=5)
+        qrcont = resp.read()
+        print(qrcont.decode('utf-8'))
+
+        # 获取操作成功后faceset状态
+        fsdata = json.loads(qrcont.decode('utf-8'))
+        face_count = fsdata['face_count']
+        print("人脸删除成功！\nfaceset中的人脸数量: " + str(face_count))
+        return True
+
+    except urllib.error.HTTPError as e:
+        print(e.read().decode('utf-8') + "\n人脸删除失败！")
+        return False
 
 
 def remove_face(face_t):
@@ -128,7 +219,7 @@ def face_token_upload(face_token):
         # 获取操作成功后faceset状态
         fsdata = json.loads(qrcont.decode('utf-8'))
         face_count = fsdata['face_count']
-        print("新用户人脸上传成功！\n当前faceset中的人脸数量: " + str(face_count))
+        print("新用户人脸上传成功！\nfaceset中的人脸数量: " + str(face_count))
         return True
 
     except urllib.error.HTTPError as e:
@@ -174,6 +265,7 @@ def face_search(filepath):
         if isinstance(d, str):
             data[i] = d.encode('utf-8')
 
+
     http_body = b'\r\n'.join(data)
     req = urllib.request.Request(url=http_url, data=http_body)
     req.add_header('Content-Type', 'multipart/form-data; boundary=%s' % boundary)
@@ -181,17 +273,19 @@ def face_search(filepath):
     new_face_token = 'no'
     likely_face_token = 'no'
     try:
+        print("发送请求！！")
         resp = urllib.request.urlopen(req, timeout=5)
         qrcont = resp.read()
         print(qrcont.decode('utf-8'))
 
         # 获取搜索结果
         res = json.loads(qrcont.decode('utf-8'))
-        if len(res["faces"]) > 1:
+        if (len(res["faces"]) > 1):
             uf = [True, True]
             return uf
 
-        m = res['thresholds']['1e-4']
+        min = res['thresholds']['1e-3']
+        max = res['thresholds']['1e-5']
         conf = res["results"][0]["confidence"]
         new_face_token = res["faces"][0]["face_token"]
         likely_face_token = res["results"][0]["face_token"]
@@ -200,12 +294,12 @@ def face_search(filepath):
         uf = [False, False]
         return uf
 
-    if new_face_token == 'no':
+    if (new_face_token == 'no'):
         uf = [False, False]
         return uf
 
     else:
-        if conf <= m:
+        if (conf <= min):
             # print("未搜索到已存在用户！\n新face_token为： " + new_face_token)
             # 上传新的face_token并保存到数据库
             flag = face_token_upload(new_face_token)
@@ -227,8 +321,8 @@ def face_search(filepath):
             session.close()
             return user_info
 
-        if conf >= m:
-            # print("搜索到已存在用户！\nface_token为: " + likely_face_token)
+        if (conf >= max):
+            print("搜索到已存在用户！\nface_token为: " + likely_face_token)
             # =========mysql获取用户信息
             # mycursor = face_db.cursor()
             # sql = "SELECT * FROM user_info WHERE biomarker = \'" + likely_face_token + "\'"
@@ -288,7 +382,7 @@ def face_upload(filepath):
     try:
         resp = urllib.request.urlopen(req, timeout=5)
         qrcont = resp.read()
-        # print(qrcont.decode('utf-8'))
+        print(qrcont.decode('utf-8'))
 
         # 提取face_token
         fdata = json.loads(qrcont.decode('utf-8'))
@@ -298,7 +392,7 @@ def face_upload(filepath):
     except urllib.error.HTTPError as e:
         print(e.read().decode('utf-8'))
 
-    if face_token == 'no':
+    if (face_token == 'no'):
         print('人脸检测失败!')
         return False
     else:
@@ -308,10 +402,14 @@ def face_upload(filepath):
 
 
 def main():
-        new_face = r""
-    # #     # face_for_search = r"/Users/yeshuai/Documents/实训/face_rec/faces_repeated/14.jpg"
-    # #     user_info = face_search(new_face)
-    #     remove_face('6adff42f2f9396cfd6fc720e70946dad')
+    new_face = r"/Users/yeshuai/Documents/实训/face_rec/user_face/9.jpg"
+    # # face_for_search = r"/Users/yeshuai/Documents/实训/face_rec/faces_repeated/14.jpg"
+    user_info = face_search(new_face)
+    # remove_face('590ac00b69a0e4e59a7a9ad9150d1ad8')
+    # remove_all_faces();
+    # face_upload(new_face)
+    # create_faceset()
+
 
 
 if __name__ == '__main__':
