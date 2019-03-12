@@ -3,10 +3,22 @@
 
 # In[1]:
 
-from math import sqrt
 
+# 偏好数据集（人-电影-评分）
+prefs = {
+    'name1': {'movie1': 2.5, 'movie2': 3.5, 'movie3': 3.0, 'movie4': 3.5, 'movie5': 2.5, 'movie6': 3.0},
+    'name2': {'movie1': 3.0, 'movie2': 3.5, 'movie3': 1.5, 'movie4': 5.0, 'movie6': 3.0, 'movie5': 3.5},
+    'name3': {'movie1': 2.5, 'movie2': 3.0, 'movie4': 3.5, 'movie6': 4.0},
+    'name4': {'movie2': 3.5, 'movie3': 3.0, 'movie6': 4.5, 'movie4': 4.0, 'movie5': 2.5},
+    'name5': {'movie1': 3.0, 'movie2': 4.0, 'movie3': 2.0, 'movie4': 3.0, 'movie6': 3.0, 'movie5': 2.0},
+    'name6': {'movie1': 3.0, 'movie2': 4.0, 'movie6': 3.0, 'movie4': 5.0, 'movie5': 3.5},
+    'name7': {'movie2': 4.5, 'movie5': 1.0, 'movie4': 4.0}
+}
 
 # In[2]:
+
+
+from math import sqrt,fabs
 
 
 # 计算两行之间的欧几里得距离，以此来代表相似度。prefs表示偏好数据集
@@ -59,7 +71,7 @@ def sim_pearson(prefs, row1_name, row2_name):
 
     # 计算皮尔逊评价值
     num = pSum - (sum1 * sum2 / n)
-    den = sqrt((sum1Sq - pow(sum1, 2) / n) * (sum2Sq - pow(sum2, 2) / n))
+    den = sqrt(fabs(sum1Sq - pow(sum1, 2) / n) * fabs(sum2Sq - pow(sum2, 2) / n))
     if den == 0: return 0
 
     r = num / den
@@ -73,7 +85,7 @@ def sim_pearson(prefs, row1_name, row2_name):
 # 匹配相似行
 # 根据偏好数据集，返回与某个行最匹配的n行。person表示要匹配的行（人），similarity表示相似度计算函数
 def topMatches(prefs, row_name, n=5, similarity=sim_pearson):
-    scores = [(similarity(prefs, row_name, other), other) for other in prefs if other != row_name]
+    scores = [(similarity(prefs, row_name, item), item) for item in prefs]
     scores.sort()
     scores.reverse()
     num = n
@@ -181,3 +193,17 @@ def getRecommendedItems(prefs, itemMatch, row_name):
     rankings.reverse()
     return rankings
 
+
+# In[9]:
+
+
+# 匹配相似列，返回各列的匹配集合（因为各列的匹配可提前在用户登陆前完成），
+# 根据转置后的偏好数据集，获取每列相似的n个其他列
+def calculateSpecificSimilarItems(prefs, item, n=5):
+    # 以列为中心对偏好矩阵实施转置处理
+    itemPrefs = transformPrefs(prefs)
+    # 寻找最为相近的列
+    itemMatch = topMatches(itemPrefs, item, n=n, similarity=sim_pearson)
+    return itemMatch  # 返回每列匹配的其他列
+
+# In[ ]:
