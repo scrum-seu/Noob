@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 from flask import render_template
 from app.main.dbapi import *
+from app.main.DataAnalysis.Func.obtain_prefs import obtain_prefs
 from decimal import *
 from datetime import timedelta
 import app.main.FaceDetect.faceDetect as face
@@ -17,7 +18,7 @@ def demo():
 1.调用query_goods()查询商品信息
 2.页面初始化返回返回商品信息给前台
 3.return:goodInfo
-    typr:str
+    type:str
 '''
 
 @app.route('/init', methods=["GET", "POST"])
@@ -86,7 +87,7 @@ def upload_test():
                    % (user_info[2])
         else:
             # 检测失败(因为各种各样的原因)
-            return "人脸检测失败！ 请检查网络连接和照片是否包含人脸。"
+            return "人脸检测失败！ 请检查控制台信息，网络连接和照片是否包含人脸。\n（或者faceset为空！\n或者为 faceset中搜索到已存在用户！数据库中未搜索到匹配用户）"
 
 
     # if request.method == 'GET':  # 当以post方式提交数据时
@@ -164,8 +165,17 @@ def transReco():
         #userid作为用户行为分析模块的入参
         for key in data:
             userid=data[key]
-        #预留调用用户分析模块
-        return ("hello")
+        reco=obtain_prefs(int(userid))
+        num = len(reco)
+        if(num==0):
+            return("0")
+        else:
+            get_reco=""
+            for i in range(5):
+                goods_info=query_goods(reco[i])
+                price=str(Decimal(goods_info.price).quantize(Decimal('0.0')))
+                get_reco=get_reco+goods_info.name+","+price+","
+            return(get_reco)
     else:
         return render_template("login.html")
 

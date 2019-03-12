@@ -3,13 +3,23 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <title>编辑表格数据</title>
+    <title>新零售便利店</title>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script src="{{ url_for('static',filename='js/addTable.js') }}"></script>
     <script src="{{ url_for('static',filename='js/sendMessage.js') }}"></script>
     <script src="{{ url_for('static',filename='js/inputSelect.js') }}"></script>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
-    <script language="javascript">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+        <!-- BOOTSTRAP STYLES-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+    <!-- FONTAWESOME STYLES-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.css') }}">
+    <!--CUSTOM BASIC STYLES-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/basic.css') }}">
+    <!--CUSTOM MAIN STYLES-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+    <!-- GOOGLE FONTS-->
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
+    <script>
         var tabProduct1 = document.getElementById("tabProduct");
         EditTables(tabProduct1);
     </script>
@@ -38,22 +48,16 @@
 </head>
 
 <body>
+
+<hr width="72%" style="position:absolute;top:-20px;left:200px;height:1px;border:none;border-top:5px solid #00FF00;" />
 <!--用户注册及基本信息显示-->
 <div class="left_top">
-    <video id="v" style="width: 160px;height: 120px;"></video>
-    <canvas style="display:none;width: 160px;height: 120px;" id="canvas"></canvas>
-    <button id="start" style="display:block">开启摄像头</button>
-    <button id="tp" style="display:block">拍照</button>
-    <button id="upload" style="display:block">人脸识别</button>
-    <input type="button" value="注册" id="submit" onclick="onSubmit()">
-    <label id="msg"></label>
-    <form id="register" name="form1" method="post">
-			<label>编号：</label><input style="width:250px" type="text" id="u_userid" name="userbioflag" placeholder="用户user_id"><br/>
-			<label>姓名：</label><input style="width:250px" type="text" id="u_name" name="username" placeholder="请输入姓名"><br/>
-			<label>性别：</label><input style="width:250px" type="text" id="u_sex" name="usersex" placeholder="请输入性别"><br/>
-			<label>年龄：</label><input style="width:250px" type="text" id="u_age" name="userage" placeholder="请输入年龄"><br/>
-			<label>电话：</label><input style="width:250px" type="text" id="u_number" name="usernumber" placeholder="请输入电话"><br/>
-    </form>
+    <video id="v" style="width: 160px;height: 120px;position: relative;top:25px;"></video>
+    <canvas id="canvas" style="display:none;width: 160px;height: 120px;position: relative;top:25px;"></canvas>
+    <button type="button" class="btn btn-lg btn-default" id="start">开启摄像</button>
+    <button type="button" class="btn btn-lg btn-primary" id="tp">拍照</button>
+    <button type="button" class="btn btn-lg btn-success" id="upload">人脸识别</button>
+    <h1 style="font-size:20px;position:absolute;top:255px">购买信息</h1>
     <script>
         var t;
         var videoPlaying = false;
@@ -139,7 +143,6 @@
                             // length=7,检测到已注册用户
                             if (arr.length==7)
                             {
-                                alert("已注册用户");
                                 var arr_id=arr[2].split(":");
                                 var arr_name=arr[3].split(":");
                                 var arr_gender=arr[4].split(":");
@@ -157,7 +160,6 @@
                                 // length=4,新用户仅返回用户id
                                 if(arr.length==4)
                                 {
-                                    alert("新用户");
                                      document.getElementById("userid").value=arr_id[1];
                                 }
                                 // length=1,人脸检测失败！ 请检查网络连接和照片是否包含人脸。
@@ -206,17 +208,27 @@
 
     </script>
 </div>
+<div>
+<div>
+    <form id="register" name="form1" method="st">
+			<label>编号：</label><input style="width:250px" type="text" id="u_userid" name="userbioflag" placeholder="用户user_id"><br/>
+			<label>姓名：</label><input style="width:250px" type="text" id="u_name" name="username" placeholder="请输入姓名"><br/>
+			<label>性别：</label><input style="width:250px" type="text" id="u_sex" name="usersex" placeholder="请输入性别"><br/>
+			<label>年龄：</label><input style="width:250px" type="text" id="u_age" name="userage" placeholder="请输入年龄"><br/>
+			<label>电话：</label><input style="width:250px" type="text" id="u_number" name="usernumber" placeholder="请输入电话"><br/>
+    </form>
+    <button class="btn btn-primary "id="submit" onclick="onSubmit()">register</button>
+</div>
 <!--购买记录模块-->
 <div class="buy_info">
-    <h1>购买信息</h1>
     <form id="put_info" name="form2">
-        <input type="button" name="Submit" value="新增" onclick="AddRow(document.getElementById('tabProduct'),1)"
-               id="newin">
-        <input type="button" name="Submit22" value="清空购物信息" onclick="deleteRow()" id="reload">
-        <input type="button" name="Submit3" value="提交" onclick="GetTableData()" id="upload1">
+        <button type="button" class="btn btn-lg btn-default" onclick="AddRow(document.getElementById('tabProduct'),1)"
+               id="add">Add</button>
+        <button type="button" class="btn btn-lg btn-info" id="clear" onclick="deleteRow()">Clear</button>
+        <button type="button" class="btn btn-lg btn-success"onclick="GetTableData()" id="save">Save</button>
         <label id="info1">时间：</label><input type="text" name="time" id="systime" onfocus=this.blur()>
         <label id="info2">ID：</label><input type="text" name="user" id="userid" onfocus=this.blur()>
-        <table width="698" border="0" cellpadding="0" cellspacing="0" id="tabProduct" style="overflow: scroll;">
+        <table width="750" border="0" cellpadding="0" cellspacing="0" id="tabProduct">
             <tr>
                 <td width="50" bgcolor="#EFEFEF" Name="good_id" EditType="TextBox">商品ID</td>
                 <td width="200" bgcolor="#EFEFEF" Name="good_name" EditType="TextBox">商品</td>
@@ -226,23 +238,73 @@
         </table>
     </form>
 </div>
-    <!--商品信息选择下拉框-->
-    <select  id="telUserName"  onchange="putValueToInput()" style="width:280px;height:28px;position: absolute;left: 208px;top: 270px; ">
-    </select>
-    <input  type="text" name="input"  placeholder="-请选择-" id="input" onblur="inputValue()"
-            style="width:258px; height: 22px; position: absolute;left: 208px;top: 270px; "/>
-    <div class="top" style="width:280px;border:1px solid #ccc;display:none;position: absolute;left: 208px;top: 298px; " id="DIV">
-</div>
 <!--用户推荐信息模块-->
 <div class="recommend">
-    <h2>推荐信息</h2>
-    <input type="button" name="GetRecom" value="获得推荐信息" onclick="GetRecom_info()" id="GetRecom_info">
-    <form id="rec_info" name="form3" method="post">
-        <textarea name="recom" style="width:300px;height:120px;">这里写内容</textarea>
-    </form>
-        <label style="position: absolute;left: 600px;top: -430px;">提示信息</label>
-        <textarea id="detectinfo" name="hint" style="position: absolute;left: 600px;top: -575px;width:300px;height:120px;"></textarea>
+    <button id="GetRecom_info" type="button" class="btn btn-lg btn-success"onclick="GetRecom_info()">推荐</button>
+    <button id="flush_info" type="button" class="btn btn-danger" onclick="window.location.reload()">结账</button>
 </div>
-<input type="button" name="flush" value="刷新" onclick="window.location.reload()" id="flush_info">
+<div class="panel panel-default" style="width:750px;position:absolute;margin-left:550px;margin-top:600px;">
+	<div class="panel-heading">
+		商品信息
+	</div>
+	<div class="panel-body">
+		<div class="table-responsive">
+			<table class="table" id="showdata">
+				<thead>
+					<tr>
+						<th>Num</th>
+						<th>Good Name</th>
+						<th>Price</th>
+						<th>Position</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr class="success">
+						<td>1</td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr class="info">
+						<td>2</td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr class="warning">
+						<td>3</td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr class="danger">
+						<td>4</td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr class="success">
+						<td>5</td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+<div class="tips">
+<label style="position: absolute;left:600px;top:220px;font-size:20px">Message</label>
+<textarea id="detectinfo" name="hint" style="position: absolute;width: 300px;height: 165px;left:600px;top:30px;"></textarea>
+</div>
+    <!--商品信息选择下拉框-->
+<select  id="telUserName"  onchange="putValueToInput()" style="width:280px;height:28px;position:absolute;left:200px;top:312px;">
+</select>
+<input  type="text" name="input"  placeholder="-请选择-" id="input" onblur="inputValue()"
+        style="width:258px;height:28px;position:absolute;left:200px;top:312px;"/>
+ </div>
+ <div class="top" style="width:280px;border:1px solid #ccc;display:none;position:absolute;left:200px;top:340px;"id="DIV">
+</div>
 </body>
 </html>
