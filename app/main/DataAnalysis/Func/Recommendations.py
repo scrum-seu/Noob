@@ -37,7 +37,7 @@ def multiple_recommendation(func_id=1):
 
 
 # 获得个性化推荐序列
-def personalized_recommendation(user_id, func_id=1):
+def personalized_recommendation(user_id):
     """
 
     :param user_id:
