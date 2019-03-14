@@ -9,6 +9,10 @@ Base = declarative_base()
 
 
 class User(Base):
+    """
+    User map the user table in mysql
+
+    """
     __tablename__ = 'user_info'
     user_id = Column(Integer, primary_key=True)
     biomarker = Column(String(255), unique=True)
@@ -44,11 +48,14 @@ class User(Base):
 
 
 class Goods(Base):
+    """
+    Goods map the goods table in mysql database
+    """
     __tablename__ = 'goods_info'
     good_id = Column(Integer, primary_key=True)
     name = Column(String(255), unique=True)
     price = Column(String(255))
-    other1 = Column(String(255))
+    category = Column(String(255))
     other2 = Column(String(255))
 
     def getinfo(self):
@@ -57,9 +64,10 @@ class Goods(Base):
         :return:
         """
         goods_info = {
+            'good_id': self.good_id,
             'name': self.name,
             'price': self.price,
-            'other1': self.other1,
+            'category': self.category,
             'other2': self.other2
         }
         return goods_info
@@ -69,6 +77,9 @@ class Goods(Base):
 
 
 class Purchase_history(Base):
+    """
+    Purchase_history map the Purchase_history in mysql database
+    """
     __tablename__ = 'purchase_history'
     history_id = Column(Integer, primary_key=True)
     user_id = Column(Integer)
@@ -102,6 +113,29 @@ class Purchase_history(Base):
         return "<purchase_history: {}>".format(self.purchase_date)
 
 
+class Goods_category(Base):
+    """
+    Goods_category map the Goods_category in mysql database
+    """
+    __tablename__ = 'goods_category'
+    category_id = Column(Integer, primary_key=True)
+    category_name = Column(String(255))
+
+    def getinfo(self):
+        """
+
+        :return:
+        """
+        goods_category_info = {
+            'category_id': self.category_id,
+            'category_name': self.category_name,
+        }
+        return goods_category_info
+
+    def __repr__(self):
+        return "<goods_category_info: {}>".format(self.category_name)
+
+
 def get_session():
     """
     建立连接，获取数据库会话
@@ -113,8 +147,6 @@ def get_session():
         mysql_config['ip'] + ':' + mysql_config['port'] + '/' + \
         mysql_config['database'] + '?charset=' + mysql_config['charset']
 
-
-
     engine = create_engine(SQLALCHEMY_DATABASE_URI)
     DBSession = sessionmaker(bind=engine)
     return DBSession()
@@ -122,5 +154,5 @@ def get_session():
 
 if __name__ == "__main__":
     session = get_session()
-    user = session.query(User).filter(User.user_id == '2').one()
-    print(user.name)
+    goods_category = session.query(Goods_category).one()
+    print(goods_category.category_name)
