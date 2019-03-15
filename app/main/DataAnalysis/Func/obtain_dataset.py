@@ -2,7 +2,6 @@
 # -*- coding:utf-8 -*-
 from app.main.dbapi import query_purchase_history_orderby_purchase_date
 from app.main.DataAnalysis.Func.date_range import *
-from app.main.DataAnalysis.Func.handle_dataset import handle_dataset
 import json
 
 
@@ -49,11 +48,4 @@ def obtain_ranking_first(dataset):
 def obtain_prefs_from_json():
     with open('static/js/prefs.json', 'r', encoding='utf-8') as file:
         prefs = json.load(file)
-    return prefs
-
-
-# 从数据库分析获得兴趣度字典
-def obtain_prefs_from_database():
-    dataset = obtain_dataset()
-    prefs = handle_dataset(dataset)
     return prefs
