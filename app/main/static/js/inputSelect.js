@@ -2,51 +2,62 @@
   author:lishuo
   function:imitate drop-down box search function
 */
-function putValueToInput(){
-    var telUserName= document.getElementById("telUserName");
-    var perpage=telUserName.options[telUserName.selectedIndex].text;
-    var input=document.getElementById("input");
-    input.value=perpage;
-    var div=document.getElementById("DIV");
-    div.style.display='none';
-    div.innerHTML="";
-}
-
-function inputValue(){
-    var input=document.getElementById("input").value;
-    var telUserName= document.getElementById("telUserName");
-    var options=telUserName.getElementsByTagName("option");
-    var div=document.getElementById("DIV");
-    div.innerHTML="";
-    var a = 0;
-    for(var i=options.length-1;i>=1;i--){
-        var optionText=options[i].text;
-        if(optionText.indexOf(input) >= 0){
-            div.style.display='block';
-            div.innerHTML+="<span style='font-size: 12px;' onclick='getVlaue(this)'>"+optionText+"</span><br/>";
-            a++;
+var TempArr = [];
+function bodyevent(a, b, c) {
+    $(a + " option").each(function(index, el) {
+        TempArr[index] = $(this).text()
+    });
+    $(document).bind('click',
+    function(e) {
+        var e = e || window.event;
+        var elem = e.target || e.srcElement;
+        while (elem) {
+            if (elem.id && (elem.id == a.replace('#', '') || elem.id == b.replace('#', '') || elem.id == c.replace('#', ''))) {
+                return
+            }
+            elem = elem.parentNode
+        }
+        $(a).css({
+            "display": "none",
+            "border-color": "#b8b8b8"
+        });
+        $(b).css({
+            "border-color": "#b8b8b8"
+        });
+        $(c + " span").removeClass("up")
+    })
+};
+function changeF(this_, a, b, c) {
+    $(this_).prevAll("input[id='" + b + "']").val($(this_).find("option:selected").text());
+    $(a).css({
+        "display": "none"
+    });
+    $(c + " span").removeClass("up")
+};
+function setfocus(this_, a, b, c) {
+    bodyevent("#typenum","#makeupCo","#search-button");
+    $(a).css({
+        "display": "",
+        "border-color": "#38f"
+    });
+    $(b).css({
+        "border-color": "#38f"
+    });
+    $(c + " span").addClass("up");
+    var select = $(a);
+    select.html("");
+    for (i = 0; i < TempArr.length; i++) {
+        var option = $("<option></option>").text(TempArr[i]);
+        select.append(option)
+    }
+};
+function setinput(this_, a) {
+    var select = $(a);
+    select.html("");
+    for (i = 0; i < TempArr.length; i++) {
+        if (TempArr[i].indexOf(this_.value) >= 0) {
+            var option = $("<option></option>").text(TempArr[i]);
+            select.append(option)
         }
     }
-    if(a==0){
-        div.style.display='none';
-    }
-}
-
-function getVlaue(obj){
-    var telUserName= document.getElementById("telUserName");
-    var options=telUserName.getElementsByTagName("option");
-    var div=document.getElementById("DIV");
-    for(var i=options.length-1;i>=1;i--){
-        var optionText=options[i].text;
-        var optionValue=options[i].value;
-        if(obj.innerHTML==optionText){
-            telUserName.value=optionValue;
-            document.getElementById("input").value=optionText;
-            var obj = document.getElementById("telUserName"); //定位id
-            var index = obj.selectedIndex; // 选中索引
-            obj.options[index].text = optionText; // 选中文本
-            div.style.display='none';
-            div.innerHTML="";
-        }
-    }
-}
+};
