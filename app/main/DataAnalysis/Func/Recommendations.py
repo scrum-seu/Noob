@@ -1,6 +1,6 @@
 #!/usr/bin/env python 
 # -*- coding:utf-8 -*-
-from app.main.DataAnalysis.Func.CFR import calculateSpecificSimilarItems, getRecommendations, sim_distance
+from app.main.DataAnalysis.Func.CFR import *
 from app.main.DataAnalysis.Func.obtain_dataset import *
 from app.main.DataAnalysis.Func.handle_dataset import *
 
@@ -52,8 +52,11 @@ def personalized_recommendation(user_id):
     :return ranking:
     """
     prefs = ObtainPrefsFunc[1]()
-    # 根据所给数据集通过推荐算法得到推荐序列
-    ranking_str = getRecommendations(prefs, row_name=user_id)
+    # 利用相似物品推荐相似物品
+    itemMatch = calculateSimilarItems(prefs)  # 提前计算所有物品的相似物品
+    ranking_str = getRecommendedItems(prefs, itemMatch, row_name=user_id)
+    # # 利用相似顾客推荐相似物品
+    # ranking_str = getRecommendations(prefs, row_name=user_id)
     # 推荐序列的数值化
     ranking = [int(item[1]) for item in ranking_str]
     return ranking[0:5]
