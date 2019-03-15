@@ -1,8 +1,16 @@
 #!/usr/bin/env python 
 # -*- coding:utf-8 -*-
-from app.main.DataAnalysis.Func.CFR import calculateSpecificSimilarItems, getRecommendations
+from app.main.DataAnalysis.Func.CFR import calculateSpecificSimilarItems, getRecommendations, sim_distance
 from app.main.DataAnalysis.Func.obtain_dataset import *
 from app.main.DataAnalysis.Func.handle_dataset import *
+
+
+# 从数据库分析获得兴趣度字典
+def obtain_prefs_from_database():
+    dataset = obtain_dataset()
+    prefs = handle_dataset(dataset)
+    return prefs
+
 
 # 获取数据集的字典
 ObtainDatasetFunc = {
@@ -49,3 +57,7 @@ def personalized_recommendation(user_id):
     # 推荐序列的数值化
     ranking = [int(item[1]) for item in ranking_str]
     return ranking[0:5]
+
+
+if __name__ == '__main__':
+    print(personalized_recommendation(459))
