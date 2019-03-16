@@ -35,7 +35,7 @@ function changeF(this_, a, b, c) {
     $(c + " span").removeClass("up")
 };
 function setfocus(this_, a, b, c) {
-    bodyevent("#typenum","#makeupCo","#search-button");
+//    bodyevent("#typenum","#makeupCo","#search-button");
     $(a).css({
         "display": "",
         "border-color": "#38f"
