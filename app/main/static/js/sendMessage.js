@@ -59,7 +59,7 @@ function GetTableData(table){
         contentType: 'application/json',
         success: function(data){
             console.log(data)
-//            document.getElementById("save").disabled=true;
+            document.getElementById("save").disabled=true;
         },
         error: function(jqXHR){console.log(jqXHR)},
     })

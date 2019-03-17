@@ -98,8 +98,8 @@ def upload_test():
                 return "照片中人脸多于1张，请重新拍摄！"
             else:
                 # 找到了已经注册的用户
-                return "搜索到已存在用户！\n该用户信息为 user_id:%s\n           name:%s\n" \
-                      "           gender:%s\n           age:%s\n           phone_number:%s" \
+                return "搜索到已存在用户！该用户信息为:\n user_id:%s\n name:%s\n" \
+                      " gender:%s\n age:%s\n phone_number:%s" \
                       % (user_info[2], user_info[3], user_info[4], user_info[5], user_info[6])
 
         elif user_info[1]:

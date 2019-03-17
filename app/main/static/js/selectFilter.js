@@ -1,3 +1,17 @@
+/**
+ * selectFilter  --v1.1
+ *
+ * author： 840399345@qq.com
+ *
+ * $(el).selectFilter(options);
+ *
+ * options={
+ *  callBack : function (res){}  // 返回选中的值 进行事件操作
+ * }
+ *
+ * 也可以放在表单直接获取  select标签的 值
+ *
+ **/
 
 ;jQuery.fn.selectFilter = function (options){
 	var defaults = {

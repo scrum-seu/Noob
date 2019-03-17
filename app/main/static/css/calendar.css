@@ -5,12 +5,12 @@
  * 设置日历的大小
  */
 .calendar{
-  width: 320px;
-  height: 400px;
+  width:30%;
+  height:99%;
   display: block;
   position:absolute;
-  left:200px;
-  top:700px;
+  float:left;
+  border-style:solid;
   background-image:url(../img/blue.jpeg);
   background-repeat:no-repeat;
   background-size: cover;
