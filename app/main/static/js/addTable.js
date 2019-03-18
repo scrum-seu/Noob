@@ -181,7 +181,7 @@ function ClearChild(element){
 
 //添加行同时为商品和单价字段赋值
 function AddRow(table, index){
-    var obj = document.getElementById("telUserName"); //定位id
+    var obj = document.getElementById("typenum"); //定位id
     var index = obj.selectedIndex; // 选中索引
     var text = obj.options[index].text; // 选中文本
     if(text=="")
@@ -189,18 +189,33 @@ function AddRow(table, index){
         alert("请选中商品：")
         return 0;
     }
-    if(document.getElementById("userid").value=="")
+    var mytable = document.getElementById("tabProduct");
+    var arr2=text.split(":");
+    var flag=1;
+    var temp=0;
+    for(var i=0; i < table.rows.length; i++)
     {
-        alert("用户不存在,请检查:")
-        return 1;
+        if(mytable.rows[i].cells[0].innerHTML==arr2[0])
+        {
+            temp=parseInt(mytable.rows[i].cells[2].innerHTML);
+            temp=temp+1;
+            mytable.rows[i].cells[2].innerHTML=temp+"";
+            flag=0;
+            return 0;
+        }
     }
+//    if(document.getElementById("userid").value=="")
+//    {
+//        alert("用户不存在,请检查:")
+//        return 1;
+//    }
     var lastRow = table.rows[table.rows.length-1];
     var newRow = lastRow.cloneNode(true);
     //计算新增加行的序号，需要引入jquery 的jar包
     var startIndex = $.inArray(lastRow,table.rows);
     var endIndex = table.rows;
      table.tBodies[0].appendChild(newRow);
-    var arr2=text.split(":");
+
     newRow.cells[0].innerHTML=arr2[0];
     //数量默认为1
     newRow.cells[1].innerHTML=arr2[1];
@@ -264,6 +279,10 @@ return rowData;
 function deleteRow()
 {
     var tab = document.getElementById("tabProduct") ;
+    var input=document.getElementById("makeupCo");
+    input.value="";
+    document.getElementById("typenum")[0].selected=true;
+
     //表格行数
     var rows = tab.rows.length ;
     for(i=1;i<rows;i++)

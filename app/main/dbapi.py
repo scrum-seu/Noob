@@ -1,4 +1,4 @@
-from app.models.models import get_session, User, Goods, Purchase_history
+from app.models.models import get_session, User, Goods, Purchase_history, Goods_category
 
 
 """
@@ -114,12 +114,12 @@ def query_goods(good_id=-1):
     return goods
 
 
-def add_goods(name, price, other1=None, other2=None):
+def add_goods(name, price, category=None, other2=None):
     """
     添加商品
     :return:
     """
-    good = Goods(name=name, price=price, other1=other1, other2=other2)
+    good = Goods(name=name, price=price, category=category, other2=other2)
     try:
         session = get_session()
         session.add(good)
@@ -259,7 +259,86 @@ def delete_purchase_history(history_id):
         session.close()
 
 
+"""
+==================================================================
+==========================Goods category Data Operation=====================
+==================================================================
+"""
+
+
+def query_goods_category(category_id=-1):
+    """
+    查询商品类型，category_id == -1, 返回所有商品类型
+    :param category_id:
+    :return:
+    """
+    session = get_session()
+    histories = session.query(Goods_category).all() if -1 == category_id \
+        else session.query(Purchase_history).filter(
+        Goods_category.category_id == category_id).one()
+    session.close()
+    return histories
+
+
+def add_goods_category(category_id, category_name):
+    """
+    添加商品类型
+    :param category_id:
+    :param category_name:
+    :return:
+    """
+    goods_category = Goods_category(category_id=category_id, category_name=category_name)
+    try:
+        session = get_session()
+        session.add(goods_category)
+        session.commit()
+    except Exception:
+        session.rollback()
+        print("add goods_category fail!!!")
+        raise
+    finally:
+        session.close()
+
+
+def update_goods_category_info(goods_category):
+    """
+    更新商品类型信息
+    :param goods_category:
+    :return:
+    """
+    try:
+        session = get_session()
+        session.query(Purchase_history).filter(goods_category.history_id ==
+                                               goods_category.history_id).update(goods_category.getinfo())
+        session.commit()
+    except Exception:
+        session.rollback()
+        print("update goods category information fail!!!")
+        raise
+    finally:
+        session.close()
+
+
+def delete_goods_category(category_id):
+    """
+    删除商品类型
+    :param category_id:
+    :return:
+    """
+    try:
+        session = get_session()
+        session.query(Goods_category).filter(Goods_category.history_id == category_id).delete()
+        session.commit()
+    except Exception:
+        session.rollback()
+        print("delete goods category fail!!!")
+        raise
+    finally:
+        session.close()
+
+
 if __name__ == "__main__":
+    pass
     # add_purchase_history(1, 2, 3, "4", "2019-8-8", "test")
     # h = [h for h in query_purchase_history() if h.other1 == "test"]
-    print(h[0].purchase_date)
+    # print(h[0].purchase_date)
