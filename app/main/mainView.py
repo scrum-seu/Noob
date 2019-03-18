@@ -3,7 +3,9 @@
 from flask import Flask, render_template, request
 from flask import render_template
 from app.main.dbapi import *
-from app.main.DataAnalysis.Func.Recommendations import multiple_recommendation
+
+from app.main.DataAnalysis.Func.Recommendations import multiple_recommendation, personalized_recommendation
+
 from decimal import *
 from datetime import timedelta
 import app.main.FaceDetect.faceDetect as face
@@ -13,7 +15,6 @@ import json
 import datetime
 import decimal
 # import pyOpenSSL
-
 
 class DecimalEncoder(json.JSONEncoder):
     """
@@ -28,7 +29,6 @@ class DecimalEncoder(json.JSONEncoder):
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = timedelta(seconds=1)
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(seconds=1)
-
 
 @app.route('/')
 def demo():
@@ -98,17 +98,17 @@ def upload_test():
                 return "照片中人脸多于1张，请重新拍摄！"
             else:
                 # 找到了已经注册的用户
-                return "\n搜索到已存在用户！\n该用户信息为 user_id:%s\n           name:%s\n" \
-                      "           gender:%s\n           age:%s\n           phone_number:%s" \
+                return "搜索到已存在用户！该用户信息为:\n user_id:%s\n name:%s\n" \
+                      " gender:%s\n age:%s\n phone_number:%s" \
                       % (user_info[2], user_info[3], user_info[4], user_info[5], user_info[6])
 
         elif user_info[1]:
             # 用户未注册，创建新用户
-            return "\n未搜索到已存在用户！\n新创建的用户信息为 user_id: %s\n其他信息为空！ " \
+            return "未搜索到已存在用户！\n新创建的用户信息为 user_id: %s\n其他信息为空！ " \
                    % (user_info[2])
         else:
             # 检测失败(因为各种各样的原因)
-            return "人脸检测失败！ 请检查控制台信息，网络连接和照片是否包含人脸。\n（或者faceset为空！\n或者为 faceset中搜索到已存在用户！数据库中未搜索到匹配用户）"
+            return "人脸检测失败！ 请检查控制台信息，网络连接和照片是否包含人脸。\n（或者faceset为空！\n或者为 faceset中搜索到已存在用户！数据库中未搜索到匹配用户）\n"
 
 
     # if request.method == 'GET':  # 当以post方式提交数据时
@@ -157,11 +157,14 @@ def login():
 def savePurchase():
     if request.method == "POST":
         data = request.get_json()
+        print(data)
         num=len(data)
         for i in range(num):
             for key in data[i]:
                 if (key == "user_id"):
                     user_id=data[i][key]
+                    if(user_id==""):
+                        return "error"
                 if (key == "good_id"):
                     good_id=data[i][key]
                 if (key == "purchase_date"):
@@ -178,45 +181,51 @@ def savePurchase():
 
 '''
 1.接收用户ID
-2.调用用户分析模块（预留）
+2.调用用户分析模块
 3.根据用户分析购买推荐，返回给前台购买推荐信息
+flag：0个性化推荐
+flag: 1常规推荐
+flag: 2季节性推荐
+flag: 3热点推荐
 '''
 @app.route('/recom', methods=["GET", "POST"])
 def transReco():
     if request.method == "POST":
         #data获取用户id
         data = request.get_json()
+        #reco 临时存放推荐商品ID
+        reco=""
         #userid作为用户行为分析模块的入参
+        userid=""
+        flag=4;
         for key in data:
-            userid=data[key]
-        reco=multiple_recommendation(int(userid))
-        num = len(reco)
-        if(num==0):
-            return("0")
+            if(key=="user_id"):
+                userid=data[key]
+            if(key=="flag"):
+                flag=int(data[key])
+        if(userid==""):
+            return "failed to receive userid"
+        session = get_session()
+        limit=len(session.query(Purchase_history).filter(
+            Purchase_history.user_id == userid).all())
+        print(limit)
+        if(limit < 6 and flag==0):
+            return "error1"
+        if(flag==0):
+            reco = personalized_recommendation(int(userid))
+            print(reco)
         else:
-            get_reco=""
-            for i in range(5):
-                goods_info=query_goods(reco[i])
-                price=str(Decimal(goods_info.price).quantize(Decimal('0.0')))
-                get_reco=get_reco+goods_info.name+","+price+","
-            return get_reco
-    else:
-        return render_template("login.html")
-
-
-def transReco_test():
-    reco=multiple_recommendation()
-    num = len(reco)
-    if(num==0):
-        return("0")
-    else:
+            if(flag==1 or flag==2 or flag==3):
+                reco = multiple_recommendation(flag)
+        num = len(reco)
         get_reco=""
-        for i in range(5):
+        for i in range(num):
             goods_info=query_goods(reco[i])
             price=str(Decimal(goods_info.price).quantize(Decimal('0.0')))
-            get_reco=get_reco+goods_info.name+","+price+","
-        print(get_reco)
-
+            get_reco=get_reco+goods_info.name+","+price+","+goods_info.category+","
+        return get_reco
+    else:
+        return render_template("login.html")
 
 # =============================================================================
 # =============================== NoobMobile ==================================
@@ -554,7 +563,8 @@ def average_month_consumption(res_dict, register_year, register_month, this_year
 
 
 if __name__ == '__main__':
-    # app.run(debug=True, host="0.0.0.0", ssl_context=("/home/noob/ssl/server.crt", "/home/noob/ssl/server.key"))
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0", ssl_context=("/home/noob/ssl/server.crt", "/home/noob/ssl/server.key"))
+    # app.run(debug=True)
+
 
 

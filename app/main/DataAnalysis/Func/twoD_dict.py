@@ -2,7 +2,7 @@
 # -*- coding:utf-8 -*-
 
 # 返回每个顾客各个商品的累计购买次数
-def addtwodimdict(object_dict, key, sub_key):
+def addTwoDimDict(object_dict, key, sub_key, value=1):
     """
 
     :param object_dict:
@@ -14,13 +14,13 @@ def addtwodimdict(object_dict, key, sub_key):
     if key in object_dict:
         # 若当前顾客的历史购买记录不存在此商品id
         if sub_key not in object_dict[key]:
-            object_dict[key].update({sub_key: 1})
+            object_dict[key].update({sub_key: value})
         # 存在则累加
         else:
-            object_dict[key][sub_key] += 1
+            object_dict[key][sub_key] += value
     # 矩阵不存在当前顾客id则初始化
     else:
-        object_dict.update({key: {sub_key: 1}})
+        object_dict.update({key: {sub_key: value}})
 
 
 # 二维字典值点除一维字典值
@@ -34,7 +34,7 @@ def TD_dot_divide_OD(TD, OD):
 
 
 # 二维字典值点乘标量值
-def TD_dot_multiply_ZD(TD, ZD=5):
+def TD_dot_multiply_ZD(TD, ZD=2):
     for key in TD:
         if type(TD[key]).__name__ == 'dict':
             for sub_key in TD[key]:
