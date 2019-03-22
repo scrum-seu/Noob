@@ -104,8 +104,8 @@ class Purchase_history(Base):
             'count': self.count,
             'total_price': self.total_price,
             'purchase_date': self.purchase_date,
-            'other1': self.other1,
-            'other2': self.other2
+            'category_id': self.category_id,
+            'action_id': self.action_id
         }
         return purchase_history_info
 
