@@ -77,7 +77,6 @@
                         dataType: 'text',
                         success: function (data) {
                         console.log(data)
-                            getNowFormatDate();
                             document.getElementById("detectinfo").value=data;
                             var arr=data.split("\n");
                              //length=6,检测到已注册用户
@@ -88,7 +87,8 @@
                                 var arr_age=arr[4].split(":");
                                 var arr_number=arr[5].split(":");
                                 document.getElementById("u_userid").value=arr_id[1];
-                                document.getElementById("userid").value=arr_id[1];
+                                var obj = document.getElementById("userid");
+                                obj.innerText= arr_id[1];
                                 document.getElementById("u_name").value=arr_name[1];
                                 document.getElementById("u_sex").value=arr_gender[1];
                                 document.getElementById("u_age").value=arr_age[1];
@@ -103,7 +103,8 @@
                                 else{
                                     if(arr.length==1||arr.length==4){
                                         document.getElementById("u_userid").value="";
-                                        document.getElementById("userid").value="";
+                                        var obj = document.getElementById("userid");
+                                        obj.innerText= "0";
                                         document.getElementById("u_name").value="";
                                         document.getElementById("u_sex").value="";
                                         document.getElementById("u_age").value="";
