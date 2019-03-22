@@ -14,8 +14,9 @@ from sqlalchemy import extract
 import json
 import datetime
 import decimal
-# import pyOpenSSL
+import random
 
+# import pyOpenSSL
 class DecimalEncoder(json.JSONEncoder):
     """
     处理decimal不能json序列化问题
@@ -34,34 +35,29 @@ app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(seconds=1)
 def demo():
     return render_template("index.html")
 
+
 '''
-1.调用query_goods()查询商品信息
-2.页面初始化返回返回商品信息给前台
-3.return:goodInfo
+1.返回用户购买信息
+2.return:purchaseInfo
     type:str
 '''
-
-@app.route('/init', methods=["GET", "POST"])
-def init():
-    #获取id,name,price字段
-    u = [(good.good_id, good.name, good.price) for good in query_goods()]
-    goodnum = len(u)
-    testlist = []
-    #数据库字段处理，拼接字符串
-    for i in range(goodnum):
-        testlist.append([])
-        testlist[i].append(str(u[i][0]))
-        testlist[i].append(u[i][1].replace(" ", ""))
-        m = str(Decimal(u[i][2]).quantize(Decimal('0.0')))
-        testlist[i].append(m)
-    new=[]
-    for i in range(goodnum):
-        new.append(" ".join(testlist[i]))
-    goodInfo = " ".join(new)
-    if request.method == "POST":
-        return (goodInfo)
-    else:
-        return render_template("login.html")
+@app.route('/purchase', methods=['GET', 'POST'])
+def getPurchaseInfo():
+    if request.method == 'POST':  # 当以post方式提交数据时
+        rangelist = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+                     19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
+        num = random.randint(3, 5)
+        list = random.sample(rangelist, num)
+        listnum = len(list)
+        templist = []
+        purchaseInfo = ""
+        for i in range(listnum):
+            temp = query_goods(list[i])
+            if (i == 0):
+                purchaseInfo = '{},{},{},{}'.format(temp.good_id, temp.name, random.randint(1, 5), temp.price)
+            else:
+                purchaseInfo = '{},{}'.format(purchaseInfo, '{},{},{},{}'.format(temp.good_id, temp.name, random.randint(1, 5), temp.price))
+        return(purchaseInfo)
 
 '''
 1.保存照片到本地
@@ -465,7 +461,7 @@ def average_month_consumption(res_dict, register_year, register_month, this_year
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host="0.0.0.0", ssl_context=("/home/noob/ssl/server.crt", "/home/noob/ssl/server.key"))
-    #app.run(debug=True)
+    #app.run(debug=True, host="0.0.0.0", ssl_context=("/home/noob/ssl/server.crt", "/home/noob/ssl/server.key"))
+    app.run(debug=True)
 
 
