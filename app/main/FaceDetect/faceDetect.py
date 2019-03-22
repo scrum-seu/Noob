@@ -3,43 +3,42 @@ import urllib.request
 import urllib.error
 import time
 import json
+# from sqlalchemy import Column, String, create_engine
+# from sqlalchemy.orm import sessionmaker
+# from sqlalchemy.ext.declarative import declarative_base
 from app.main.dbapi import *
-from sqlalchemy import Column, String, create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
 
 key = "OCfvZCSf72p8WPptTdW_nv2rwQa10i_x"
 secret = "TATBECgI3LMRuPVLLB15GtTvpqc3pbOY"
 faceset_token = "a95b184fd0011a44b3c18d553ff677f5"
 boundary = '----------%s' % hex(int(time.time() * 1000))  # boundary为自定义的分隔符，用于分割数据
 
-# 创建对象的基类:
-Base = declarative_base()
+# # 创建对象的基类:
+# Base = declarative_base()
 
 
-# 定义User对象:
-class User(Base):
-    # 表的名字:
-    __tablename__ = 'user_info'
+# # 定义User对象:
+# class User(Base):
+#     # 表的名字:
+#     __tablename__ = 'user_info'
+#
+#     # 表的结构:
+#     user_id = Column(String(11), primary_key=True)
+#     biomarker = Column(String(255))
+#     name = Column(String(255))
+#     sex = Column(String(255))
+#     age = Column(String(255))
+#     occupation = Column(String(255))
+#     phone_num = Column(String(255))
+#     other1 = Column(String(255))
+#     other2 = Column(String(255))
+#     other3 = Column(String(255))
 
-    # 表的结构:
-    user_id = Column(String(11), primary_key=True)
-    biomarker = Column(String(255))
-    name = Column(String(255))
-    sex = Column(String(255))
-    age = Column(String(255))
-    occupation = Column(String(255))
-    phone_num = Column(String(255))
-    other1 = Column(String(255))
-    other2 = Column(String(255))
-    other3 = Column(String(255))
 
-
-# 初始化数据库连接:
-engine = create_engine('mysql+pymysql://root:123456Ys@localhost:3306/ScrumFaceDetect')
-# 创建DBSession类型:
-DBSession = sessionmaker(bind=engine)
-
+# # 初始化数据库连接:
+# engine = create_engine('mysql+pymysql://root:1234@localhost:3306/scrumfacedetect')
+# # 创建DBSession类型:
+# DBSession = sessionmaker(bind=engine)
 
 
 def create_faceset():
@@ -292,10 +291,12 @@ def face_search(filepath):
 
     except BaseException as e:
         uf = [False, False]
+        print("网络错误！")
         return uf
 
     if (new_face_token == 'no'):
         uf = [False, False]
+        print("没检测到人脸")
         return uf
 
     else:
@@ -311,7 +312,7 @@ def face_search(filepath):
             # assert mycursor.rowcount == 1, "新用户上传失败"
 
             # 创建Session:
-            session = DBSession()
+            session = get_session()
             sql = "INSERT INTO user_info (biomarker) VALUES ('%s')" % (new_face_token)
             result = session.execute(sql)
             session.commit()
@@ -333,8 +334,15 @@ def face_search(filepath):
             # remove_face(likely_face_token)
 
             # 创建Session:
-            session = DBSession()
+            session = get_session()
             # 创建Query查询，filter是where条件，最后调用one()返回唯一行，如果调用all()则返回所有行:
+            user = session.query(User).filter(User.biomarker == likely_face_token).one()
+            print(user.user_id)
+            user_info = [True, False, user.user_id, user.name, user.sex, user.age, user.phone_num]
+            print(user_info)
+            # 关闭Session:
+            session.close()
+            return user_info
 
             try:
                 user = session.query(User).filter(User.biomarker == likely_face_token).one()
@@ -348,9 +356,6 @@ def face_search(filepath):
                 print("逻辑错误！faceset中搜索到已存在用户！数据库中未搜索到匹配用户，请手动加入！")
                 uf = [False, False]
                 return uf
-
-
-
 
 
 def face_upload(filepath):
@@ -402,7 +407,7 @@ def face_upload(filepath):
     except urllib.error.HTTPError as e:
         print(e.read().decode('utf-8'))
 
-    if (face_token == 'no'):
+    if face_token == 'no':
         print('人脸检测失败!')
         return False
     else:
@@ -419,7 +424,6 @@ def main():
     # remove_all_faces();
     # face_upload(new_face)
     # create_faceset()
-
 
 
 if __name__ == '__main__':

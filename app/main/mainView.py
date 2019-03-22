@@ -415,6 +415,104 @@ def get_consumption_category_info():
         return None
 
 
+@app.route("/get_general_consumption_info", methods=["GET", "POST"])
+def get_general_consumption_info():
+    """
+    通过user_id，获得用户的总统计消费情况
+    :return:{"days": 341,
+               "times": 13,
+               "money": 543.6}
+    """
+    if request.method == "POST":
+        try:
+            req_data = request.get_json()
+            user_id = req_data["user_id"]
+        except Exception as e:
+            print(e)
+            print(
+                "request the function paramters of get_general_consumption_info failed!"
+            )
+            return None
+        try:
+            res_dict = {}
+            # 计算用户第一次购物到现在过了几天
+            session = get_session()
+            sql = (
+                "SELECT datediff(sysdate(),(SELECT min(purchase_date) FROM purchase_history where user_id=%s ))"
+                % user_id
+            )
+            result = session.execute(sql)
+            session.commit()
+            for i in result:
+                res_dict["days"] = i[0]
+            # 计算用户购买了多少次
+            sql = (
+                "SELECT count(*) from (SELECT DISTINCT purchase_date , user_id from  purchase_history where user_id=%s ) as tmp"
+                % user_id
+            )
+            result = session.execute(sql)
+            session.commit()
+            for i in result:
+                res_dict["times"] = i[0]
+            # 计算用户一共花了多少钱
+            sql = "select sum(total_price) from purchase_history WHERE user_id={}".format(user_id)
+            result = session.execute(sql)
+            session.commit()
+            for i in result:
+                res_dict["money"] = i[0]
+
+            # 返回字符串化结果字典
+            return json.dumps(res_dict)
+        except Exception as e:
+            print("error: {}\n failed to get info of consumption_category!".format(e))
+            return None
+    else:
+        return None
+
+
+@app.route("/get_consumption_data_info", methods=["GET", "POST"])
+def get_consumption_data_info():
+    """
+    通过user_id和用户修改的姓名、年龄、职业和手机号信息更新用户的消费记录.
+    用户没有输入就提交则传输空字符串"".
+    :return: success: {"success":'yes'}
+              fail: None
+    """
+    if request.method == "POST":
+        try:
+            req_data = request.get_json()
+            user_id = req_data["user_id"]
+            name = req_data["name"]
+            age = req_data["age"]
+            occupation = req_data["occupation"]
+            phone_num = req_data["phone_num"]
+        except Exception as e:
+            print(e)
+            print(
+                "request the function paramters of get_general_consumption_info failed!"
+            )
+            return None
+        try:
+            res_dict = {}
+
+            # 获取用户购买记录
+            session = get_session()
+            sql = "UPDATE user_info SET name=\'{}\', age={},occupation=\'{}\',phone_num=\'{}\' WHERE user_id={}".format(
+                name, age, occupation, phone_num, user_id
+            )
+            session.execute(sql)
+            session.commit()
+
+            res_dict["success"] = "yes"
+            # 返回字符串化结果字典
+            return json.dumps(res_dict)
+        except Exception as e:
+            print("error: {}\n failed to update SQL of userinfo!".format(e))
+            return None
+    else:
+        return None
+
+
 # =========================================================================
 # ================================data calculation=========================
 # =========================================================================
@@ -461,7 +559,7 @@ def average_month_consumption(res_dict, register_year, register_month, this_year
 
 
 if __name__ == '__main__':
-    #app.run(debug=True, host="0.0.0.0", ssl_context=("/home/noob/ssl/server.crt", "/home/noob/ssl/server.key"))
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0", ssl_context=("/home/noob/ssl/server.crt", "/home/noob/ssl/server.key"))
+    # app.run(debug=True)
 
 
