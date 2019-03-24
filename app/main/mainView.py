@@ -1,5 +1,5 @@
 # import sys
-# sys.path.append("/home/noob/")
+# sys.path.append("/home/noob/Noob/")
 from flask import Flask, render_template, request
 from flask import render_template
 from app.main.dbapi import *
@@ -9,6 +9,7 @@ from app.main.DataAnalysis.Func.Recommendations import multiple_recommendation, 
 from decimal import *
 from datetime import timedelta
 import app.main.FaceDetect.faceDetect as face
+import os
 import base64
 from sqlalchemy import extract
 import json
@@ -16,7 +17,7 @@ import datetime
 import decimal
 import random
 
-# import pyOpenSSL
+
 class DecimalEncoder(json.JSONEncoder):
     """
     处理decimal不能json序列化问题
@@ -31,18 +32,19 @@ app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = timedelta(seconds=1)
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(seconds=1)
 
+
 @app.route('/')
 def demo():
     return render_template("index.html")
 
 
-'''
-1.返回用户购买信息
-2.return:purchaseInfo
-    type:str
-'''
 @app.route('/purchase', methods=['GET', 'POST'])
 def getPurchaseInfo():
+    """
+    1.返回用户购买信息
+    2.return:purchaseInfo
+        type:str
+    """
     if request.method == 'POST':  # 当以post方式提交数据时
         rangelist = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
                      19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
@@ -53,23 +55,24 @@ def getPurchaseInfo():
         purchaseInfo = ""
         for i in range(listnum):
             temp = query_goods(list[i])
-            if (i == 0):
+            if i == 0:
                 purchaseInfo = '{},{},{},{}'.format(temp.good_id, temp.name, random.randint(1, 5), temp.price)
             else:
                 purchaseInfo = '{},{}'.format(purchaseInfo, '{},{},{},{}'.format(temp.good_id, temp.name, random.randint(1, 5), temp.price))
-        return(purchaseInfo)
+        return purchaseInfo
 
-'''
-1.保存照片到本地
-2.上传并进行人脸检测
-3.人脸检测返回值为user_info，为一个列表：
-            如果找到了已经存在的用户，返回形如list[True,False,user_id,name,gender,age,phone_number]的列表
-            如果图片中有多张人脸，则返回[True,True],提示重新拍照
-            若没有找到则返回list[False,True,user_id],user_id为新创建的用户的id
-            若检测失败(因为网络问题或者没有检测到人脸)，则返回list[False,False]
-'''
+
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_test():
+    """
+    1.保存照片到本地
+    2.上传并进行人脸检测
+    3.人脸检测返回值为user_info，为一个列表：
+                如果找到了已经存在的用户，返回形如list[True,False,user_id,name,gender,age,phone_number]的列表
+                如果图片中有多张人脸，则返回[True,True],提示重新拍照
+                若没有找到则返回list[False,True,user_id],user_id为新创建的用户的id
+                若检测失败(因为网络问题或者没有检测到人脸)，则返回list[False,False]
+    """
     print('uploading!')
     # 获取图片文件并保存
     if request.method == 'POST':  # 当以post方式提交数据时
@@ -79,18 +82,18 @@ def upload_test():
         # print(data[22:])
         data=data[22:]
 
-        #将base64解码生成图片文件并保存
+        # 将base64解码生成图片文件并保存
         imgdata = base64.b64decode(data)
         file = open('FaceDetect/faces/face.jpg', 'wb')
         file.write(imgdata)
         file.close()
 
-        #识别人脸数据并返回信息
+        # 识别人脸数据并返回信息
         user_info = face.face_search('FaceDetect/faces/face.jpg')
         print(user_info)
-        if (user_info[0]):
-            if(user_info[1]):
-                #图片中人脸太多，重新拍照
+        if user_info[0]:
+            if user_info[1]:
+                # 图片中人脸太多，重新拍照
                 return "照片中人脸多于1张，请重新拍摄！"
             else:
                 # 找到了已经注册的用户
@@ -105,116 +108,114 @@ def upload_test():
         else:
             # 检测失败(因为各种各样的原因)
             return "人脸检测失败！ 请检查控制台信息，网络连接和照片是否包含人脸。\n（或者faceset为空！\n或者为 faceset中搜索到已存在用户！数据库中未搜索到匹配用户）\n"
-
-
     # if request.method == 'GET':  # 当以post方式提交数据时
-
     return ''
 
-'''
-1.注册信息接收/更新用户信息
-格式：  data = {
-        "userid": userid,
-        "username": name,
-        "usersex": sex,
-        "userage": age,
-        "usernumber":number
-    };
-'''
+
 @app.route('/login', methods=["GET", "POST"])
 def login():
+    """
+    1.注册信息接收/更新用户信息
+    格式：  data = {
+            "userid": userid,
+            "username": name,
+            "usersex": sex,
+            "userage": age,
+            "usernumber":number
+        };
+    """
     if request.method == "POST":
         data = request.get_json()
-        users=""
+        users = ""
         for key in data:
-            #print(key + ':' + data[key])
-            if(key=="userid"):
-                users=query_user_by_userid(int(data[key]))
+            # print(key + ':' + data[key])
+            if key == "userid":
+                users = query_user_by_userid(int(data[key]))
         for key in data:
-            if(key=="userage"):
-                users.age=data[key]
-            if(key=="username"):
-                users.name=data[key]
-            if(key=="usersex"):
-                users.sex=data[key]
-            if(key=="usernumber"):
-                users.phone_num=data[key]
+            if key == "userage":
+                users.age = data[key]
+            if key == "username":
+                users.name = data[key]
+            if key == "usersex":
+                users.sex = data[key]
+            if key == "usernumber":
+                users.phone_num = data[key]
         update_user_info(users)
-        return("success")
+        return "success"
     else:
         return render_template("login.html")
 
 
-'''
-1.用户购买信息接收
-2.保存购买信息到数据库
-'''
 @app.route('/goods', methods=["GET", "POST"])
 def savePurchase():
+    """
+    1.用户购买信息接收
+    2.保存购买信息到数据库
+    """
     if request.method == "POST":
         data = request.get_json()
         print(data)
-        num=len(data)
+        num = len(data)
         for i in range(num):
             for key in data[i]:
-                if (key == "user_id"):
-                    user_id=data[i][key]
-                    if(user_id==""):
+                if key == "user_id":
+                    user_id = data[i][key]
+                    if user_id == "":
                         return "error"
-                if (key == "good_id"):
-                    good_id=data[i][key]
-                if (key == "purchase_date"):
+                if key == "good_id":
+                    good_id = data[i][key]
+                if key == "purchase_date":
                     purchase_date = data[i][key]
-                if (key == "total_price"):
+                if key == "total_price":
                     total_price = data[i][key]
-                if (key == "count"):
-                    count=data[i][key]
+                if key == "count":
+                    count = data[i][key]
             add_purchase_history(int(user_id), int(good_id), int(count), total_price, purchase_date)
-        return("success")
+        return "success"
     else:
         return render_template("login.html")
 
 
-'''
-1.接收用户ID
-2.调用用户分析模块
-3.根据用户分析购买推荐，返回给前台购买推荐信息
-flag：0个性化推荐
-flag: 1常规推荐
-flag: 2季节性推荐
-flag: 3热点推荐
-'''
 @app.route('/recom', methods=["GET", "POST"])
 def transReco():
+    """
+    1.接收用户ID
+    2.调用用户分析模块
+    3.根据用户分析购买推荐，返回给前台购买推荐信息
+    flag：0个性化推荐
+    flag: 1常规推荐
+    flag: 2季节性推荐
+    flag: 3热点推荐
+    """
     if request.method == "POST":
-        #data获取用户id
+        # data获取用户id
         data = request.get_json()
-        #reco 临时存放推荐商品ID
-        reco=""
-        #userid作为用户行为分析模块的入参
-        userid=""
-        flag=4;
+        # reco 临时存放推荐商品ID
+        reco = ""
+        # userid作为用户行为分析模块的入参
+        userid = ""
+        flag = 4
         for key in data:
-            if(key=="user_id"):
-                userid=data[key]
-            if(key=="flag"):
-                flag=int(data[key])
-        if(userid==""):
+            if key == "user_id":
+                userid = data[key]
+            if key == "flag":
+                flag = int(data[key])
+        if userid == "":
             return "failed to receive userid"
         session = get_session()
-        limit=len(session.query(Purchase_history).filter(
+        limit = len(session.query(Purchase_history).filter(
             Purchase_history.user_id == userid).all())
         print(limit)
-        if(limit < 6 and flag==0):
+        if limit < 6 and flag == 0:
             return "error1"
-        if(flag==0):
+        if flag == 0:
             reco = personalized_recommendation(int(userid))
             print(reco)
         else:
-            if(flag==1 or flag==2 or flag==3):
+            if flag == 1 or flag == 2 or flag == 3:
                 reco = multiple_recommendation(flag)
         num = len(reco)
-        get_reco=""
+        get_reco = ""
         for i in range(num):
             goods_info=query_goods(reco[i])
             price=str(Decimal(goods_info.price).quantize(Decimal('0.0')))
@@ -222,6 +223,7 @@ def transReco():
         return get_reco
     else:
         return render_template("login.html")
+
 
 # =============================================================================
 # =============================== NoobMobile ==================================
@@ -246,38 +248,6 @@ def get_user_info():
             return None
     else:
         return None
-
-
-@app.route('/perfect_user_info', methods=["GET", "POST"])
-def perfect_user_info():
-    """
-    完善用户信息name, sex, age, occupation, phone_num, other1, 2, 3
-    :return: success: information upload successfully
-              fail: information uploads failed
-    """
-    if request.method == "POST":
-        try:
-            req_data = request.get_json()
-            user = query_user(req_data["biomarker"])
-            user.name = req_data["name"]
-            user.sex = req_data["sex"]
-            user.age = req_data["age"]
-            user.occupation = req_data["occupation"]
-            user.other1 = req_data["other1"]
-        except Exception as e:
-            print(e)
-            print("upload data struction error!")
-            return "information uploads failed"
-
-        # 更新用户信息
-        try:
-            update_user_info(user)
-            return "information upload successfully"
-        except Exception as e:
-            print(e)
-            return "information uploads failed"
-    else:
-        return "information uploads failed"
 
 
 @app.route('/recommend', methods=["GET", "POST"])
@@ -444,7 +414,7 @@ def get_general_consumption_info():
             result = session.execute(sql)
             session.commit()
             for i in result:
-                res_dict["days"] = i[0]
+                res_dict["days"] = i[0] if i[0] else 0
             # 计算用户购买了多少次
             sql = (
                 "SELECT count(*) from (SELECT DISTINCT purchase_date , user_id from  purchase_history where user_id=%s ) as tmp"
@@ -453,16 +423,16 @@ def get_general_consumption_info():
             result = session.execute(sql)
             session.commit()
             for i in result:
-                res_dict["times"] = i[0]
+                res_dict["times"] = i[0] if i[0] else 0
             # 计算用户一共花了多少钱
             sql = "select sum(total_price) from purchase_history WHERE user_id={}".format(user_id)
             result = session.execute(sql)
             session.commit()
             for i in result:
-                res_dict["money"] = i[0]
+                res_dict["money"] = i[0] if i[0] else 0
 
             # 返回字符串化结果字典
-            return json.dumps(res_dict)
+            return json.dumps(res_dict, cls=DecimalEncoder)
         except Exception as e:
             print("error: {}\n failed to get info of consumption_category!".format(e))
             return None
@@ -470,8 +440,62 @@ def get_general_consumption_info():
         return None
 
 
-@app.route("/get_consumption_data_info", methods=["GET", "POST"])
-def get_consumption_data_info():
+@app.route("/get_purchase_history", methods=["GET", "POST"])
+def get_purchase_history():
+    """
+    通过user_id和年月，获得用户当月的购买历史记录
+    :return:{
+        "history":
+                [{"time": 该条购买记录的时间 '23号16:23',
+               "name": 商品名字 '六个核桃核桃乳植物蛋白',
+               "num": 购买数量 '5',
+               "count": 金额总计 '234'},
+                ...]}
+    """
+    if request.method == "POST":
+        try:
+            req_data = request.get_json()
+            user_id = req_data["user_id"]
+            selected_year = req_data["year"]
+            selected_month = req_data["month"]
+        except Exception as e:
+            print(e)
+            print(
+                "request the function paramters of get_general_consumption_info failed!"
+            )
+            return None
+        try:
+            res_dict = {}
+            his_list = []
+
+            # 获取用户购买记录
+            session = get_session()
+            result = session.query(Purchase_history.purchase_date, Goods.name, Purchase_history.count,
+                                   Purchase_history.total_price). \
+                join(Goods, Purchase_history.good_id == Goods.good_id). \
+                filter(Purchase_history.user_id == user_id). \
+                filter(extract('year', Purchase_history.purchase_date) == selected_year). \
+                filter(extract('month', Purchase_history.purchase_date) == selected_month).all()
+            for i in result:
+                his_item = dict()
+                his_item["time"] = "{}号{}:{}".format(i[0].month, i[0].hour, i[0].minute)
+                his_item["name"] = i[1]
+                his_item["num"] = i[2]
+                his_item["count"] = i[3]
+                his_list.append(his_item)
+
+            res_dict["history"] = his_list
+            # 返回字符串化结果字典
+            return json.dumps(res_dict, cls=DecimalEncoder)
+        except Exception as e:
+            print("error: {}\n failed to get info of consumption_category!".format(e))
+            return None
+    else:
+        return None
+
+
+@app.route("/perfect_info", methods=["GET", "POST"])
+def perfect_info():
     """
     通过user_id和用户修改的姓名、年龄、职业和手机号信息更新用户的消费记录.
     用户没有输入就提交则传输空字符串"".
@@ -494,14 +518,12 @@ def get_consumption_data_info():
             return None
         try:
             res_dict = {}
-
-            # 获取用户购买记录
-            session = get_session()
-            sql = "UPDATE user_info SET name=\'{}\', age={},occupation=\'{}\',phone_num=\'{}\' WHERE user_id={}".format(
-                name, age, occupation, phone_num, user_id
-            )
-            session.execute(sql)
-            session.commit()
+            user = query_user_by_userid(user_id)
+            user.name = name
+            user.age = age
+            user.occupation = occupation
+            user.phone_num = phone_num
+            update_user_info(user)
 
             res_dict["success"] = "yes"
             # 返回字符串化结果字典
@@ -510,6 +532,89 @@ def get_consumption_data_info():
             print("error: {}\n failed to update SQL of userinfo!".format(e))
             return None
     else:
+        return None
+
+
+@app.route("/face_login", methods=["GET", "POST"])
+def face_login():
+    """
+    通过用户上传的图片文件，进行人脸识别，返回识别信息
+    :return:{
+                "count": 图片中有几张人脸 ,
+                "user_id": 用户id ,
+                "is_new": 是否是老用户 ,
+                "user_info": {(用户的信息字段字典)
+                                'biomarker': self.biomarker,
+                                'name': self.name,
+                                'sex': self.sex,
+                                'age': self.age,
+                                'occupation': self.occupation,
+                                'phone_num': self.phone_num,
+                                'other1': self.other1,
+                                'other2': self.other2,
+                                'other3': self.other3
+                            }
+                }
+    """
+    try:
+        print(
+            "saving the face jpg file !"
+        )
+        f = request.files['image_file']
+
+        basepath = os.path.dirname(__file__)  # 当前文件所在路径
+        upload_path = os.path.join(basepath, "FaceDetect")
+        upload_path = os.path.join(upload_path, "faces", 'face.jpg')
+        f.save(upload_path)
+        f.close()
+
+        # 识别人脸数据并返回信息
+        res_dict = {}
+        user_info = face.face_search('FaceDetect/faces/face.jpg')
+        print(user_info)
+        if user_info[0]:
+            if user_info[1]:
+                # 图片中人脸太多，重新拍照
+                res_dict = {
+                    "count": 2,
+                }
+
+            else:
+                # 找到了已经注册的用户
+                user = query_user_by_userid(user_info[2])
+                res_dict = {
+                    "count": 1,
+                    "user_id": user_info[2],
+                    "is_new": 0,
+                    "user_info":user.getinfo()
+                }
+
+        elif user_info[1]:
+            # 用户未注册，创建新用户
+            res_dict = {
+                "count": 1,
+                "user_id": user_info[2],
+                "is_new": 1
+            }
+
+        else:
+            # 检测失败(因为各种各样的原因)
+            res_dict = {
+                "count": 0
+            }
+    except Exception as e:
+        print(e)
+        print(
+            "save the face jpg file failed!"
+        )
+        return None
+
+    try:
+        # 返回字符串化结果字典
+        return json.dumps(res_dict)
+
+    except Exception as e:
+        print("error: {}\n failed to detect face and return the result!".format(e))
         return None
 
 
@@ -559,7 +664,8 @@ def average_month_consumption(res_dict, register_year, register_month, this_year
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host="0.0.0.0", ssl_context=("/home/noob/ssl/server.crt", "/home/noob/ssl/server.key"))
+    # app.run(debug=True, host="0.0.0.0", ssl_context=("/home/noob/ssl/server.crt", "/home/noob/ssl/server.key"))
+    app.run(debug=True, host="0.0.0.0")
     # app.run(debug=True)
 
 
