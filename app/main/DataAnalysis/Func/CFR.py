@@ -18,7 +18,7 @@ prefs = {
 # In[2]:
 
 
-from math import sqrt,fabs
+from math import sqrt, fabs
 
 
 # 计算两行之间的欧几里得距离，以此来代表相似度。prefs表示偏好数据集
@@ -152,9 +152,9 @@ def calculateSimilarItems(prefs, n=10):
     itemPrefs = transformPrefs(prefs)
     c = 0
     for item in itemPrefs:
-        # 针对大数据集更新状态变量
         c += 1
-        if c % 100 == 0: print("%d / %d" % (c, len(itemPrefs)))
+        # # 针对大数据集更新状态变量
+        # if c % 100 == 0: print("%d / %d" % (c, len(itemPrefs)))
         # 寻找最为相近的列
         scores = topMatches(itemPrefs, item, n=n, similarity=sim_distance)
         itemMatch[item] = scores
@@ -170,6 +170,7 @@ def getRecommendedItems(prefs, itemMatch, row_name):
     onerow = prefs[row_name]  # 获取当前行所拥有的列
     scores = {}
     totalSim = {}
+    rankings = {}
     # 循环遍历由当前行所拥有的列
     for (item, rating) in onerow.items():
 
@@ -186,11 +187,12 @@ def getRecommendedItems(prefs, itemMatch, row_name):
             totalSim[item2] += similarity
 
     # 将每个合计值除以加权和，求出平均值
-    rankings = [(score / totalSim[item], item) for item, score in scores.items()]
+    for item, score in scores.items():
+        rankings[item] = score / totalSim[item]
 
-    # 按最高值到最低值的顺序，返回估值排行
-    rankings.sort()
-    rankings.reverse()
+    # # 按最高值到最低值的顺序，返回估值排行
+    # rankings.sort()
+    # rankings.reverse()
     return rankings
 
 
