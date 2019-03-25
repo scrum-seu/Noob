@@ -2,6 +2,7 @@
   author:lishuo
   function:front and back and database interaction
 */
+var totalRow=0;
 //获取系统时间并在文本框显示
 function getNowFormatDate() {
     var date = new Date();
@@ -81,6 +82,7 @@ function GetPurchaseData(){
                     document.getElementById("datatable").rows[i/4+1].cells[3].innerHTML=dataArr[i+2];
                     document.getElementById("datatable").rows[i/4+1].cells[4].innerHTML=dataArr[i+3];
                     totalPrice=totalPrice+parseInt(dataArr[i+2])*parseInt(dataArr[i+3]);
+                    totalRow=totalRow+1;
                 }
             }
             document.getElementById("settle").disabled=false;
@@ -153,8 +155,8 @@ function GetTableData(){
         alert("用户ID为空,请检查!")
         return 1;
     }
-    for(var i=1; i<dateTab.rows.length;i++){
-       tableData.push(GetRowData(dateTab.rows[i]));
+    for(var i=1; i<totalRow+1;i++){
+        tableData.push(GetRowData(dateTab.rows[i]));
     }
    $.ajax({
         type: 'POST',
