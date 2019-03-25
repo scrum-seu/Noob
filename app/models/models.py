@@ -87,8 +87,8 @@ class Purchase_history(Base):
     count = Column(Integer)
     total_price = Column(String(255))
     purchase_date = Column(String(255))
-    category_id = Column(Integer)
-    action_id = Column(Integer)
+    other1 = Column(String(255))
+    other2 = Column(String(255))
 
     # goods = db.relationship('Goods', backref='purchase_record')
     # user = db.relationship('User', backref='user')
@@ -104,8 +104,8 @@ class Purchase_history(Base):
             'count': self.count,
             'total_price': self.total_price,
             'purchase_date': self.purchase_date,
-            'category_id': self.category_id,
-            'action_id': self.action_id
+            'other1': self.other1,
+            'other2': self.other2
         }
         return purchase_history_info
 
