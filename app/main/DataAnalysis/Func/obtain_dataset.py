@@ -7,12 +7,20 @@ import json
 
 # 从数据库获得数据集
 def obtain_dataset():
+    """
+
+    :return dataset: 数据集
+    """
     dataset = query_purchase_history_orderby_purchase_date()
     return dataset
 
 
 # 根据季节分割数据集
 def splitDatasetByQuarter():
+    """
+
+    :return return_dataset: 按需求处理过的数据集
+    """
     dataset = obtain_dataset()
     date_start, date_end = quarterlyCommodityAnalysis_dateRange()
     return_dataset = [item for item in dataset if item.purchase_date >= date_start and item.purchase_date <= date_end]
@@ -21,6 +29,10 @@ def splitDatasetByQuarter():
 
 # 根据热销商品分割数据集
 def splitDatasetByHotCommodityDistribution():
+    """
+
+    :return return_dataset: 按需求处理过的数据集
+    """
     dataset = obtain_dataset()
     date_start, date_end = hotCommodityDistributionAnalysis_dateRange()
     return_dataset = [item for item in dataset if item.purchase_date >= date_start and item.purchase_date <= date_end]
@@ -31,8 +43,8 @@ def splitDatasetByHotCommodityDistribution():
 def obtain_ranking_first(dataset):
     """
 
-    :param dataset:
-    :return item:
+    :param dataset: 数据集
+    :return item: 排首位的id
     """
     ranking = {}
     for item in dataset:
@@ -46,6 +58,10 @@ def obtain_ranking_first(dataset):
 
 # 从.json文件获得兴趣度字典
 def obtain_prefs_from_json():
+    """
+
+    :return prefs: 顾客兴趣度字典
+    """
     with open('static/js/prefs.json', 'r', encoding='utf-8') as file:
         prefs = json.load(file)
     return prefs

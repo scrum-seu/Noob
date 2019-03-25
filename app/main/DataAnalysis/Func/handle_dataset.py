@@ -8,6 +8,11 @@ from app.models.models import Purchase_history
 
 # 补偿函数
 def compensation_function(item):
+    """
+
+    :param item: 所占百分比
+    :return weight: 转换后的权重
+    """
     if (item < 0.2):
         return 0
     elif (item < 0.4):
@@ -22,15 +27,38 @@ def compensation_function(item):
 
 # 提取数据集中的价值因素
 def handle_dataset_with_price(dataset):
+    """
+
+    :param dataset: 数据集
+    :return eachTimeCost: 包含每一位顾客每次购买所花费的总金额的字典
+    """
     eachTimeCost = {}
     # 计算每一位顾客每次购买所花费的总金额
     for item in dataset:
-        addTwoDimDict(eachTimeCost, item.user_id, item.purchase_date, item.total_price)
+        twoDimDictInit(eachTimeCost, item.user_id, item.purchase_date, item.total_price)
     return eachTimeCost
 
 
 # 用价值比重对兴趣度字典进行补偿
 def handle_prefs_with_price(dataset, prefs):
+    """
+
+    :param dataset: 数据集
+    :param prefs: 顾客兴趣度字典
+    """
+    eachTimeCost = handle_dataset_with_price(dataset)
+    for item in dataset:
+        compensation_item = item.total_price / eachTimeCost[item.user_id][item.purchase_date]
+        prefs[item.user_id][item.good_id] += compensation_function(compensation_item)
+
+
+# 用标签权重对兴趣度字典进行补偿
+def handle_prefs_with_price(dataset, prefs):
+    """
+
+    :param dataset: 数据集
+    :param prefs: 顾客兴趣度字典
+    """
     eachTimeCost = handle_dataset_with_price(dataset)
     for item in dataset:
         compensation_item = item.total_price / eachTimeCost[item.user_id][item.purchase_date]
@@ -41,8 +69,8 @@ def handle_prefs_with_price(dataset, prefs):
 def handle_dataset(dataset):
     """
 
-    :param dataset:
-    :return prefs:
+    :param dataset: 数据集
+    :return prefs: 顾客兴趣度字典
     """
     purchase_times = {}
     prefs = {}
@@ -51,12 +79,12 @@ def handle_dataset(dataset):
     for item in dataset:
         if (item.user_id not in purchase_times.keys()):
             purchase_times.setdefault(item.user_id, 1)
-        elif (item.user_id != prev.user_id):
+        elif (item.user_id != prev.user_id and item.purchase_date != prev.purchase_date):
             purchase_times[item.user_id] += 1
         prev = item
     # 获取各个顾客各个商品的购买次数
     for item in dataset:
-        addTwoDimDict(prefs, item.user_id, item.good_id)
+        twoDimDictInit(prefs, item.user_id, item.good_id)
     # 便于计算将结果放大
     TD_dot_multiply_ZD(prefs)
     # 价值补偿

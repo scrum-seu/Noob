@@ -1,14 +1,14 @@
 #!/usr/bin/env python 
 # -*- coding:utf-8 -*-
 
-# 返回每个顾客各个商品的累计购买次数
-def addTwoDimDict(object_dict, key, sub_key, value=1):
+# 二维字典初始化
+def twoDimDictInit(object_dict, key, sub_key, value=1):
     """
 
-    :param object_dict:
-    :param key:
-    :param sub_key:
-    :return:
+    :param object_dict: 目标字典
+    :param key: 一维键值
+    :param sub_key: 二维键值
+    :param value: 选填，默认为1
     """
     # 若矩阵存在当前顾客id
     if key in object_dict:
@@ -23,6 +23,33 @@ def addTwoDimDict(object_dict, key, sub_key, value=1):
         object_dict.update({key: {sub_key: value}})
 
 
+# 三维字典初始化
+def threeDimDictInit(object_dict, oneDim_key, twoDim_key, threeDim_key, value=1):
+    """
+
+    :param object_dict: 目标字典
+    :param oneDim_key: 一维键值
+    :param twoDim_key: 二维键值
+    :param threeDim_key: 三维键值
+    :param value: 选填，默认为1
+    """
+    # 若一维键值存在
+    if oneDim_key in object_dict:
+        # 若二维键值存在
+        if twoDim_key in object_dict[oneDim_key]:
+            # 若三维键值存在
+            if threeDim_key not in object_dict[oneDim_key][twoDim_key]:
+                object_dict[oneDim_key][twoDim_key].update({threeDim_key: value})
+            # 存在则累加
+            else:
+                object_dict[oneDim_key][twoDim_key][threeDim_key] += value
+        # 若二维键值存在不存在
+        else:
+            object_dict[oneDim_key].update({twoDim_key: {threeDim_key: value}})
+    else:
+        object_dict.update({oneDim_key: {twoDim_key: {threeDim_key: value}}})
+
+
 # 二维字典值点除一维字典值
 def TD_dot_divide_OD(TD, OD):
     for key in TD:
@@ -31,6 +58,16 @@ def TD_dot_divide_OD(TD, OD):
                 TD[key][sub_key] = round(TD[key][sub_key] / OD[key], 2)
         else:
             TD[key] = round(TD[key] / OD[key], 2)
+
+
+# 二维字典值点乘一维字典值
+def TD_dot_multiply_OD(TD, OD):
+    for key in TD:
+        if type(TD[key]).__name__ == 'dict':
+            for sub_key in TD[key]:
+                TD[key][sub_key] = round(TD[key][sub_key] * OD[key], 2)
+        else:
+            TD[key] = round(TD[key] * OD[key], 2)
 
 
 # 二维字典值点乘标量值

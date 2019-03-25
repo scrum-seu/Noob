@@ -7,8 +7,8 @@ import datetime
 def currentQuarter(date_now):
     """
 
-    :param date_now:
-    :return 当前季度id:
+    :param date_now: 需要转换的日期
+    :return id:当前季度id
     """
     if (date_now.month > 2 and date_now.month < 6): return 1
     if (date_now.month > 5 and date_now.month < 9): return 2
@@ -20,7 +20,7 @@ def currentQuarter(date_now):
 def quarterlyCommodityAnalysis_dateRange():
     """
 
-    :return 起止日期:
+    :return datetime:起止日期
     """
     date_now = datetime.datetime.now()
     last_year = date_now.year - 1
@@ -41,7 +41,7 @@ def quarterlyCommodityAnalysis_dateRange():
 def hotCommodityDistributionAnalysis_dateRange():
     """
 
-    :return 起止日期:
+    :return datetime:起止日期
     """
     import datetime
     date_now = datetime.datetime.now()
