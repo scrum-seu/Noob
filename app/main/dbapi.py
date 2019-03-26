@@ -200,15 +200,15 @@ def query_purchase_history_orderby_purchase_date():
     return histories
 
 
-def add_purchase_history(user_id, good_id, count, total_price, purchase_date, other1=None,
-                         other2=None):
+def add_purchase_history(user_id, good_id, count, total_price, purchase_date, category_id,
+                         action_id=1):
     """
     添加购物记录
     :return:
     """
     purchase_history = Purchase_history(user_id=user_id, good_id=good_id, count=count,
                                         total_price=total_price, purchase_date=purchase_date,
-                                        other1=other1, other2=other2)
+                                        category_id=category_id, action_id=action_id)
     try:
         session = get_session()
         session.add(purchase_history)
