@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, create_engine, Integer
+from sqlalchemy import Column, String, create_engine, Integer, Text
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from config import mysql_config
@@ -87,8 +87,8 @@ class Purchase_history(Base):
     count = Column(Integer)
     total_price = Column(String(255))
     purchase_date = Column(String(255))
-    category_id = Column(Integer)
-    action_id = Column(Integer)
+    other1 = Column(String(255))
+    other2 = Column(String(255))
 
     # goods = db.relationship('Goods', backref='purchase_record')
     # user = db.relationship('User', backref='user')
@@ -104,8 +104,8 @@ class Purchase_history(Base):
             'count': self.count,
             'total_price': self.total_price,
             'purchase_date': self.purchase_date,
-            'category_id': self.category_id,
-            'action_id': self.action_id
+            'other1': self.other1,
+            'other2': self.other2
         }
         return purchase_history_info
 
@@ -134,6 +134,64 @@ class Goods_category(Base):
 
     def __repr__(self):
         return "<goods_category_info: {}>".format(self.category_name)
+
+
+class Goods_comment(Base):
+    """
+    Goods_comment map the goods_comment in mysql database
+    """
+    __tablename__ = 'goods_comment'
+    comment_id = Column(Integer, primary_key=True)
+    good_id = Column(Integer)
+    user_id = Column(Integer)
+    content = Column(Text)
+    gender = Column(Integer)
+    time = Column(String)
+    name = Column(String)
+
+    def getinfo(self):
+        """
+
+        :return:
+        """
+        goods_comment_info = {
+            'comment_id': self.comment_id,
+            'good_id': self.good_id,
+            'user_id': self.user_id,
+            'content': self.content,
+            'gender': self.gender,
+            'time': self.time,
+            'name': self.name,
+        }
+        return goods_comment_info
+
+    def __repr__(self):
+        return "<goods_comment_info: {}>".format(self.comment_id)
+
+
+class Like_info(Base):
+    """
+    Like_info map the like_info in mysql database
+    """
+    __tablename__ = 'like_info'
+    like_id = Column(Integer, primary_key=True)
+    user_id = Column(Integer)
+    good_id = Column(Integer)
+
+    def getinfo(self):
+        """
+
+        :return:
+        """
+        goods_like_info = {
+            'like_id': self.like_id,
+            'user_id': self.user_id,
+            'good_id': self.good_id,
+        }
+        return goods_like_info
+
+    def __repr__(self):
+        return "<goods_like_info: {}>".format(self.like_id)
 
 
 def get_session():

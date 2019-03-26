@@ -22,6 +22,7 @@ class DecimalEncoder(json.JSONEncoder):
     """
     处理decimal不能json序列化问题
     """
+
     def default(self, o):
         if isinstance(o, decimal.Decimal):
             return float(o)
@@ -58,7 +59,9 @@ def getPurchaseInfo():
             if i == 0:
                 purchaseInfo = '{},{},{},{}'.format(temp.good_id, temp.name, random.randint(1, 5), temp.price)
             else:
-                purchaseInfo = '{},{}'.format(purchaseInfo, '{},{},{},{}'.format(temp.good_id, temp.name, random.randint(1, 5), temp.price))
+                purchaseInfo = '{},{}'.format(purchaseInfo,
+                                              '{},{},{},{}'.format(temp.good_id, temp.name, random.randint(1, 5),
+                                                                   temp.price))
         return purchaseInfo
 
 
@@ -77,10 +80,10 @@ def upload_test():
     # 获取图片文件并保存
     if request.method == 'POST':  # 当以post方式提交数据时
         print('PostRequest!')
-        data=request.form['data_url']
+        data = request.form['data_url']
         # data = request.get_data()
         # print(data[22:])
-        data=data[22:]
+        data = data[22:]
 
         # 将base64解码生成图片文件并保存
         imgdata = base64.b64decode(data)
@@ -98,8 +101,8 @@ def upload_test():
             else:
                 # 找到了已经注册的用户
                 return "搜索到已存在用户！该用户信息为:\n user_id:%s\n name:%s\n" \
-                      " gender:%s\n age:%s\n phone_number:%s" \
-                      % (user_info[2], user_info[3], user_info[4], user_info[5], user_info[6])
+                       " gender:%s\n age:%s\n phone_number:%s" \
+                       % (user_info[2], user_info[3], user_info[4], user_info[5], user_info[6])
 
         elif user_info[1]:
             # 用户未注册，创建新用户
@@ -217,9 +220,9 @@ def transReco():
         num = len(reco)
         get_reco = ""
         for i in range(num):
-            goods_info=query_goods(reco[i])
-            price=str(Decimal(goods_info.price).quantize(Decimal('0.0')))
-            get_reco=get_reco+goods_info.name+","+price+","+goods_info.category+","
+            goods_info = query_goods(reco[i])
+            price = str(Decimal(goods_info.price).quantize(Decimal('0.0')))
+            get_reco = get_reco + goods_info.name + "," + price + "," + goods_info.category + ","
         return get_reco
     else:
         return render_template("login.html")
@@ -249,6 +252,195 @@ def get_user_info():
     else:
         return None
 
+
+@app.route("/get_recommend_info", methods=["GET", "POST"])
+def get_recommend_info():
+    """
+    获取用户喜欢的所有商品信息
+    flag: 1常规推荐
+    flag: 2季节性推荐
+    flag: 3热点推荐
+    :return: res_dict = {"data": [{good_id:
+                                   name:
+                                   ...:
+                                   recommend: ["个性推荐"， "常规推荐"]}]}
+             失败返回： None
+    """
+    if request.method == "POST":
+        try:
+            req_data = request.get_json()
+            user_id = req_data["user_id"]
+        except Exception as e:
+            print(e)
+            print(
+                "request the function paramters of get_like_info failed!"
+            )
+            return None
+        try:
+            res_dict = {}
+            res_list = []
+            personalized_recos = personalized_recommendation(user_id)
+            routine_recos = multiple_recommendation(1)
+            quarter_recos = multiple_recommendation(2)
+            hot_recos = multiple_recommendation(3)
+            recommend_list = list(set(personalized_recos + routine_recos + quarter_recos + hot_recos))  # 所有推荐商品
+            random.shuffle(recommend_list)  # 打乱
+            for good_id in recommend_list:
+                recommend_category = []  # 推荐类别
+                item_dict = query_goods(good_id).getinfo()
+                item_dict["category"] = query_goods_category(item_dict["category"]).category_name
+                if good_id in personalized_recos:
+                    recommend_category.append("个性化推荐")
+                elif good_id in routine_recos:
+                    recommend_category.append("常规推荐")
+                elif good_id in quarter_recos:
+                    recommend_category.append("季节推荐")
+                elif good_id in hot_recos:
+                    recommend_category.append("热点推荐")
+                item_dict["recommend"] = recommend_category
+                # 添加一个商品信息及推荐类型
+                res_list.append(item_dict)
+            res_dict["data"] = res_list
+            # 返回字符串化结果字典
+            return json.dumps(res_dict, cls=DecimalEncoder)
+        except Exception as e:
+            print("error: {}\n failed to get SQL of like_info!".format(e))
+            return None
+    else:
+        return None
+
+@app.route('/get_like_and_comments', methods=["GET", "POST"])
+def get_like_and_comments():
+    """
+    输入user_id和good_id,输出用户是否喜欢、总喜欢数、总评论数、评论数组。
+    :return: success:
+                {
+                like:1/0,
+                likecount:55,
+                commentcount:45,
+                comments:[{
+                            gender:1/0(1为男性，0为女性,若用户无性别信息则默认为男性),
+                            name:张三,
+                            time:2018-9-21,
+                            txt:评论内容
+                        },...]
+                }
+             fail：传回None值
+    """
+    if request.method == "POST":
+        try:
+            uid = request.get_json()["user_id"]
+            gid = request.get_json()["goods_id"]
+            res_dict = {}
+            tag = 0
+            sql = (
+                    "select * FROM like_info WHERE user_id=%s and good_id=%s "
+                    % (uid, gid)
+            )
+            session = get_session()
+            is_like = session.execute(sql)
+            session.commit()
+            for i in is_like:
+                tag = 1
+            res_dict['like'] = tag  # 获取是否喜欢
+
+            sql = (
+                    "select count(*) FROM like_info WHERE good_id=%s"
+                    % gid
+            )
+            like_count = session.execute(sql)
+            for i in like_count:
+                res_dict['likecount'] = i[0]  # 获取喜欢数量
+
+            sql = (
+                    "select count(*) FROM goods_comment WHERE good_id=%s"
+                    % gid
+            )
+            cmt_count = session.execute(sql)
+            for i in cmt_count:
+                res_dict['commentcount'] = i[0]  # 获取总评论数量
+
+            sql = (
+                    "select * FROM goods_comment WHERE good_id=%s"
+                    % gid
+            )
+
+            like_count = session.execute(sql)
+            cmt_list = list()
+            for i in like_count:
+                cmt_dict = dict()
+                cmt_dict['gender'] = i[4]
+                cmt_dict['name'] = i[-1]
+                cmt_dict['time'] = str(i[5])
+                cmt_dict['txt'] = i[3]
+                cmt_list.append(cmt_dict)
+            res_dict['comments'] = cmt_list
+            json.dumps(res_dict)
+        except Exception as e:
+            print("error: {}\n get user info failed! Error type biomarker get!".format(e))
+            return None
+    else:
+        return None
+
+@app.route("/insert_like_info", methods=["GET", "POST"])
+def insert_like_info():
+    """
+    新增一条like_info中指定的一行用户喜欢
+    :return: res_dict = {"success": "yes"}
+             失败返回： None
+    """
+    if request.method == "POST":
+        try:
+            req_data = request.get_json()
+            user_id = req_data["user_id"]
+            good_id = req_data["good_id"]
+        except Exception as e:
+            print(e)
+            print(
+                "request the function paramters of delete_like_info failed!"
+            )
+            return None
+        try:
+            res_dict = {}
+            add_goods_like(user_id, good_id)
+            res_dict["success"] = "yes"
+            # 返回字符串化结果字典
+            return json.dumps(res_dict, cls=DecimalEncoder)
+        except Exception as e:
+            print("error: {}\n failed to add SQL of like_info!".format(e))
+            return None
+    else:
+        return None
+
+@app.route("/delete_like_info", methods=["GET", "POST"])
+def delete_like_info():
+    """
+    删除like_info中指定的一行用户喜欢
+    :return: res_dict = {"success": "yes"}
+             失败返回： None
+    """
+    if request.method == "POST":
+        try:
+            req_data = request.get_json()
+            user_id = req_data["user_id"]
+            good_id = req_data["good_id"]
+        except Exception as e:
+            print(e)
+            print(
+                "request the function paramters of delete_like_info failed!"
+            )
+            return None
+        try:
+            res_dict = {}
+            delete_like_info(user_id, good_id)
+            res_dict["success"] = "yes"
+            # 返回字符串化结果字典
+            return json.dumps(res_dict, cls=DecimalEncoder)
+        except Exception as e:
+            print("error: {}\n failed to delete SQL of like_info!".format(e))
+            return None
+    else:
+        return None
 
 @app.route('/recommend', methods=["GET", "POST"])
 def recommend():
@@ -348,11 +540,11 @@ def get_consumption_category_info():
             #                         join(Goods, Goods.category == Goods_category.category_id).\
             #                             filter(Goods.good_id == h[0]).one()
             # 所有在当月和年购买的商品类别名称集合
-            records = get_session().query(Goods_category.category_name).\
-                join(Goods, Goods.category == Goods_category.category_id).\
+            records = get_session().query(Goods_category.category_name). \
+                join(Goods, Goods.category == Goods_category.category_id). \
                 join(Purchase_history, Purchase_history.good_id == Goods.good_id). \
-                filter(Purchase_history.user_id == user_id).\
-                filter(extract('year', Purchase_history.purchase_date) == year).\
+                filter(Purchase_history.user_id == user_id). \
+                filter(extract('year', Purchase_history.purchase_date) == year). \
                 filter(extract('month', Purchase_history.purchase_date) == month).all()
             if len(records) > 0:  # 有购物记录
                 for r in records:
@@ -408,8 +600,8 @@ def get_general_consumption_info():
             # 计算用户第一次购物到现在过了几天
             session = get_session()
             sql = (
-                "SELECT datediff(sysdate(),(SELECT min(purchase_date) FROM purchase_history where user_id=%s ))"
-                % user_id
+                    "SELECT datediff(sysdate(),(SELECT min(purchase_date) FROM purchase_history where user_id=%s ))"
+                    % user_id
             )
             result = session.execute(sql)
             session.commit()
@@ -417,8 +609,8 @@ def get_general_consumption_info():
                 res_dict["days"] = i[0] if i[0] else 0
             # 计算用户购买了多少次
             sql = (
-                "SELECT count(*) from (SELECT DISTINCT purchase_date , user_id from  purchase_history where user_id=%s ) as tmp"
-                % user_id
+                    "SELECT count(*) from (SELECT DISTINCT purchase_date , user_id from  purchase_history where user_id=%s ) as tmp"
+                    % user_id
             )
             result = session.execute(sql)
             session.commit()
@@ -586,7 +778,7 @@ def face_login():
                     "count": 1,
                     "user_id": user_info[2],
                     "is_new": 0,
-                    "user_info":user.getinfo()
+                    "user_info": user.getinfo()
                 }
 
         elif user_info[1]:
@@ -667,5 +859,3 @@ if __name__ == '__main__':
     # app.run(debug=True, host="0.0.0.0", ssl_context=("/home/noob/ssl/server.crt", "/home/noob/ssl/server.key"))
     app.run(debug=True, host="0.0.0.0")
     # app.run(debug=True)
-
-

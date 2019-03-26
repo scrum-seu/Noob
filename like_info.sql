@@ -11,7 +11,7 @@
  Target Server Version : 50721
  File Encoding         : 65001
 
- Date: 25/03/2019 16:43:45
+ Date: 26/03/2019 16:03:09
 */
 
 SET NAMES utf8mb4;
@@ -26,6 +26,16 @@ CREATE TABLE `like_info` (
   `user_id` int(11) NOT NULL,
   `good_id` int(11) NOT NULL,
   PRIMARY KEY (`like_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+
+-- ----------------------------
+-- Records of like_info
+-- ----------------------------
+BEGIN;
+INSERT INTO `like_info` VALUES (1, 9, 27);
+INSERT INTO `like_info` VALUES (2, 10, 27);
+INSERT INTO `like_info` VALUES (3, 9, 33);
+INSERT INTO `like_info` VALUES (4, 9, 22);
+COMMIT;
 
 SET FOREIGN_KEY_CHECKS = 1;

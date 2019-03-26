@@ -1,5 +1,4 @@
-from app.models.models import get_session, User, Goods, Purchase_history, Goods_category
-
+from app.models.models import get_session, User, Goods, Purchase_history, Goods_category, Goods_comment, Like_info
 
 """
 ==================================================================
@@ -201,15 +200,15 @@ def query_purchase_history_orderby_purchase_date():
     return histories
 
 
-def add_purchase_history(user_id, good_id, count, total_price, purchase_date, category_id,
-                         action_id=1):
+def add_purchase_history(user_id, good_id, count, total_price, purchase_date, other1=None,
+                         other2=None):
     """
     添加购物记录
     :return:
     """
     purchase_history = Purchase_history(user_id=user_id, good_id=good_id, count=count,
                                         total_price=total_price, purchase_date=purchase_date,
-                                        category_id=category_id, action_id=action_id)
+                                        other1=other1, other2=other2)
     try:
         session = get_session()
         session.add(purchase_history)
@@ -332,6 +331,90 @@ def delete_goods_category(category_id):
     except Exception:
         session.rollback()
         print("delete goods category fail!!!")
+        raise
+    finally:
+        session.close()
+
+
+"""
+==================================================================
+==========================Goods comment and Like info Data Operation=====================
+==================================================================
+"""
+
+
+def add_goods_comment(user_id, good_id, content, time, name=None, gender=None):
+    """
+    输入user_id, good_id, content，向Goods comment表写入一行记录
+    :param user_id:
+    :param good_id:
+    :param content:
+    :param time:
+    :param name:
+    :return:
+    """
+    goods_comment = Goods_comment(user_id=user_id, good_id=good_id, content=content, time=time, name=name,
+                                  gender=gender)
+    try:
+        session = get_session()
+        session.add(goods_comment)
+        session.commit()
+    except Exception:
+        session.rollback()
+        print("add goods_comment fail!!!")
+        raise
+    finally:
+        session.close()
+
+
+def query_like_info(user_id=-1):
+    """
+    输入user_id,获取所有该用户喜欢的商品信息。user_id=-1,返回所有喜欢商品
+    :param user_id:
+    :return: 所有该用户喜欢的商品信息
+    """
+    session = get_session()
+    likes = session.query(Like_info).all() if -1 == user_id \
+        else session.query(Like_info).filter(
+        Like_info.user_id == user_id).all()
+    session.close()
+    return likes
+
+
+def delete_like_info(user_id, good_id):
+    """
+    输入user_id和good_id，删除like_info中指定的一行用户喜欢
+    :param user_id:
+    :param good_id:
+    :return:
+    """
+    try:
+        session = get_session()
+        session.query(Like_info).filter(Like_info.user_id == user_id).filter(Like_info.good_id == good_id).delete()
+        session.commit()
+    except Exception:
+        session.rollback()
+        print("delete like info fail!!!")
+        raise
+    finally:
+        session.close()
+
+
+def add_goods_like(user_id, good_id):
+    """
+    输入user_id, good_id,向like_info表写入一行记录
+    :param user_id:
+    :param good_id:
+    :return:
+    """
+    goods_like = Like_info(user_id=user_id, good_id=good_id)
+    try:
+        session = get_session()
+        session.add(goods_like)
+        session.commit()
+    except Exception:
+        session.rollback()
+        print("add goods_like fail!!!")
         raise
     finally:
         session.close()
