@@ -11,7 +11,7 @@
  Target Server Version : 50721
  File Encoding         : 65001
 
- Date: 25/03/2019 17:44:31
+ Date: 26/03/2019 10:43:03
 */
 
 SET NAMES utf8mb4;
@@ -28,6 +28,7 @@ CREATE TABLE `goods_comment` (
   `content` text NOT NULL,
   `gender` int(11) NOT NULL,
   `time` datetime NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`comment_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
