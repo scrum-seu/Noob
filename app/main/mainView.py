@@ -854,6 +854,50 @@ def face_login():
         return None
 
 
+@app.route("/get_like_info", methods=["GET", "POST"])
+def get_like_info():
+    """
+    获取用户喜欢的所有商品信息
+    :return: res_dict = {"data": [{good_id:
+                                   good_name:
+                                   ...:
+                                   }],...}
+             失败返回： None
+    """
+    if request.method == "POST":
+        try:
+            req_data = request.get_json()
+            user_id = req_data["user_id"]
+        except Exception as e:
+            print(e)
+            print(
+                "request the function paramters of get_like_info failed!"
+            )
+            return None
+        try:
+            res_dict = {}
+            res_list = []
+            goods = get_session().query(Goods).join(Like_info, Like_info.good_id == Goods.good_id).\
+                filter(Like_info.user_id == user_id).all()  # 获取用户喜欢的所有商品信息
+            personalized_recos = personalized_recommendation(user_id)
+            routine_recos = multiple_recommendation(1)
+            quarter_recos = multiple_recommendation(2)
+            hot_recos = multiple_recommendation(3)
+            for good in goods:
+                recommend_category = []  # 推荐类别
+                item_dict = good.getinfo()
+                # 添加一个商品信息及推荐类型
+                res_list.append(item_dict)
+            res_dict["data"] = res_list
+            # 返回字符串化结果字典
+            return json.dumps(res_dict, cls=DecimalEncoder)
+        except Exception as e:
+            print("error: {}\n failed to get SQL of like_info!".format(e))
+            return None
+    else:
+        return None
+
+
 # =========================================================================
 # ================================data calculation=========================
 # =========================================================================
