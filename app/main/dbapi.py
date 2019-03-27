@@ -273,7 +273,7 @@ def query_goods_category(category_id=-1):
     """
     session = get_session()
     histories = session.query(Goods_category).all() if -1 == category_id \
-        else session.query(Purchase_history).filter(
+        else session.query(Goods_category).filter(
         Goods_category.category_id == category_id).one()
     session.close()
     return histories
