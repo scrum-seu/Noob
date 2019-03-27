@@ -25,13 +25,18 @@ function getNowFormatDate() {
 function onSubmit(){
     var userid = document.getElementById("u_userid").value;
     var name = document.getElementById("u_name").value;
-    if(userid==""||name=="")
+    var sex = document.getElementById("u_sex").value;
+    if(userid==""||name==""||sex=="")
     {
-        alert("用户信息为空请检查！")
+        alert("信息不能为空请检查！")
+        return 0;
+    }
+    if(sex!="男"&&sex!="女")
+    {
+        alert("非法字段")
         return 0;
     }
     document.getElementById("userid").value=userid;
-    var sex = document.getElementById("u_sex").value;
     var age = document.getElementById("u_age").value;
     var number = document.getElementById("u_number").value;
         var data = {
@@ -59,11 +64,6 @@ function GetPurchaseData(){
     var data={
     "message":"success",
     }
-   // console.log($('#datatable').DataTable().data()[0][1]);
-//    $('#datatable').DataTable().data()[0][1]="123";
-//    console.log($('#datatable').DataTable().data()[0][1]);
-//    console.log(typeof($('#datatable').DataTable().data()));
-   // console.log(document.getElementById("datatable").rows.length);
    $.ajax({
         type: 'POST',
         url: '/purchase',
@@ -75,12 +75,13 @@ function GetPurchaseData(){
 
             for(var i = 0; i < dataArr.length; i++)
             {
-                if(i%4==0)
+                if(i%5==0)
                 {
-                    document.getElementById("datatable").rows[i/4+1].cells[1].innerHTML=dataArr[i];
-                    document.getElementById("datatable").rows[i/4+1].cells[2].innerHTML=dataArr[i+1];
-                    document.getElementById("datatable").rows[i/4+1].cells[3].innerHTML=dataArr[i+2];
-                    document.getElementById("datatable").rows[i/4+1].cells[4].innerHTML=dataArr[i+3];
+                    document.getElementById("datatable").rows[i/5+1].cells[1].innerHTML=dataArr[i];
+                    document.getElementById("datatable").rows[i/5+1].cells[2].innerHTML=dataArr[i+1];
+                    document.getElementById("datatable").rows[i/5+1].cells[3].innerHTML=dataArr[i+2];
+                    document.getElementById("datatable").rows[i/5+1].cells[4].innerHTML=dataArr[i+3];
+                    document.getElementById("datatable").rows[i/5+1].cells[5].innerHTML=dataArr[i+4];
                     totalPrice=totalPrice+parseInt(dataArr[i+2])*parseInt(dataArr[i+3]);
                     totalRow=totalRow+1;
                 }
@@ -113,9 +114,9 @@ function GetPurchaseData(){
 function GetRowData(row){
     var rowData = {};
     name="user_id";
-    var value1=document.getElementById("u_userid").value;
+    var value1=document.getElementById("userid").innerText;
     rowData[name] = value1;
-    for(var j=1;j<5; j++){
+    for(var j=1;j<6; j++){
         if(j==1){
             name="good_id";
             var value = row.cells[j].innerHTML;
@@ -135,6 +136,11 @@ function GetRowData(row){
             var value=total1.toString();
             rowData[name] = value;
        }
+       if(j==5){
+            name="category_id";
+            var value = row.cells[j].innerHTML;
+            rowData[name] = value;
+        }
     }
     name="purchase_date";
     var value1=document.getElementById("purtime").innerText;
@@ -150,7 +156,7 @@ function GetTableData(){
         alert("未检测到购买信息,请检查!")
         return 0;
     }
-    if(document.getElementById("u_userid").value=="")
+    if(document.getElementById("userid").innerText=="")
     {
         alert("用户ID为空,请检查!")
         return 1;
@@ -158,6 +164,7 @@ function GetTableData(){
     for(var i=1; i<totalRow+1;i++){
         tableData.push(GetRowData(dateTab.rows[i]));
     }
+    console.log(tableData)
    $.ajax({
         type: 'POST',
         url: '/goods',
@@ -165,7 +172,7 @@ function GetTableData(){
         contentType: 'application/json',
         success: function(data){
             console.log(data)
-            document.getElementById("settle").disabled=true;
+            document.getElementById("settle").disabled=false;
         },
         error: function(jqXHR){console.log(jqXHR)},
     })
@@ -174,8 +181,8 @@ function GetTableData(){
 //send：userid
 //receive:good_name,good_price,position(保留)
 function inquireinfo(){
-    var userid=document.getElementById("u_userid").value;
-    if (userid=="")
+    var userid=document.getElementById("userid").innerText;
+    if (userid=="" || userid=="0")
     {
         alert("用户ID为空,请检查!")
         return 0;

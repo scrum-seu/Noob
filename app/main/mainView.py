@@ -5,6 +5,7 @@ from flask import render_template
 from app.main.dbapi import *
 
 from app.main.DataAnalysis.Func.Recommendations import multiple_recommendation, personalized_recommendation
+from app.models.models import get_session, Goods, Shopping_record
 
 from decimal import *
 from datetime import timedelta
@@ -17,7 +18,10 @@ import datetime
 import decimal
 import random
 
-
+#初始化获取用户id
+_userid=0
+#物联网商品长度
+Len = 0
 class DecimalEncoder(json.JSONEncoder):
     """
     处理decimal不能json序列化问题
@@ -38,6 +42,122 @@ app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(seconds=1)
 def demo():
     return render_template("index.html")
 
+@app.route('/chart-chartist')
+def welcome():
+    """
+    数据统计路由
+    """
+    return render_template("chart-chartist.html")
+
+@app.route('/video')
+def cust():
+    """
+    无人收银
+    """
+    return render_template("video.html")
+
+@app.route('/customer')
+def custindex():
+    """
+    无人收银主页
+    """
+    return render_template("customer.html")
+
+@app.route('/goods_info', methods=['GET', 'POST'])
+def goods_info():
+    global Len
+    if request.method == 'POST':
+        session = get_session()
+        shopping_record_list = session.query(Shopping_record).all()
+        if Len != len(shopping_record_list):
+            return_str = ''
+            count_dict = {}
+            str_dict = {}
+            Len = len(shopping_record_list)
+            for item in shopping_record_list:
+                good_info = session.query(Goods).filter(Goods.good_id == item.good_id).one()
+                if good_info.good_id in count_dict:
+                    count_dict[good_info.good_id] += 1
+                    str_dict[good_info.good_id] = str(good_info.good_id) + ',' + str(good_info.name) + ',' + str(
+                        count_dict[good_info.good_id]) + ',' + str(good_info.price) + ',' + str(
+                        good_info.category) + ';'
+                else:
+                    count_dict[good_info.good_id] = 1
+                    str_dict[good_info.good_id] = str(good_info.good_id) + ',' + str(good_info.name) + ',' + str(
+                        count_dict[good_info.good_id]) + ',' + str(good_info.price) + ',' + str(
+                        good_info.category) + ';'
+            for key in str_dict:
+                return_str += str_dict[key]
+            session.close()
+            return return_str
+        else:
+            session.close()
+            return '-1'
+    else:
+        return render_template('index.html')
+
+@app.route('/init', methods=["GET", "POST"])
+def init():
+    """
+    初始化接收chart请求，返回图标数据
+    :return:str(1,2,3,4...,18)
+    """
+    u = query_purchase_history()
+    purchasenum = len(u)
+    totalprice = [0 for n in range(12)]
+    category = [0 for n in range(6)]
+    for i in range(purchasenum):
+        nowyear = u[i].purchase_date.year
+        nowmonth = u[i].purchase_date.month
+        tempcategory = u[i].category_id
+        if (nowyear == 2018 and nowmonth == 1):
+            totalprice[0] = totalprice[0] + int(u[i].total_price)
+        if (nowyear == 2018 and nowmonth == 2):
+            totalprice[1] = totalprice[1] + int(u[i].total_price)
+        if (nowyear == 2018 and nowmonth == 3):
+            totalprice[2] = totalprice[2] + int(u[i].total_price)
+        if (nowyear == 2018 and nowmonth == 4):
+            totalprice[3] = totalprice[3] + int(u[i].total_price)
+        if (nowyear == 2018 and nowmonth == 5):
+            totalprice[4] = totalprice[4] + int(u[i].total_price)
+        if (nowyear == 2018 and nowmonth == 6):
+            totalprice[5] = totalprice[5] + int(u[i].total_price)
+        if (nowyear == 2018 and nowmonth == 7):
+            totalprice[6] = totalprice[6] + int(u[i].total_price)
+        if (nowyear == 2018 and nowmonth == 8):
+            totalprice[7] = totalprice[7] + int(u[i].total_price)
+        if (nowyear == 2018 and nowmonth == 9):
+            totalprice[8] = totalprice[8] + int(u[i].total_price)
+        if (nowyear == 2018 and nowmonth == 10):
+            totalprice[9] = totalprice[9] + int(u[i].total_price)
+        if (nowyear == 2018 and nowmonth == 11):
+            totalprice[10] = totalprice[10] + int(u[i].total_price)
+        if (nowyear == 2018 and nowmonth == 12):
+            totalprice[11] = totalprice[11] + int(u[i].total_price)
+        if (tempcategory == 1):
+            category[0] = category[0] + int(u[i].total_price)
+        if (tempcategory == 2):
+            category[1] = category[1] + int(u[i].total_price)
+        if (tempcategory == 3):
+            category[2] = category[2] + int(u[i].total_price)
+        if (tempcategory == 4):
+            category[3] = category[3] + int(u[i].total_price)
+        if (tempcategory == 5):
+            category[4] = category[4] + int(u[i].total_price)
+        if (tempcategory == 6):
+            category[5] = category[5] + int(u[i].total_price)
+    chartinfo=""
+    for i in range(12):
+        if(i==0):
+            chartinfo=totalprice[0]
+        else:
+            chartinfo='{},{}'.format(chartinfo, totalprice[i])
+    for i in range(6):
+        chartinfo = '{},{}'.format(chartinfo, category[i])
+    if request.method == "POST":
+        return chartinfo
+    else:
+        return render_template("login.html")
 
 @app.route('/purchase', methods=['GET', 'POST'])
 def getPurchaseInfo():
@@ -48,22 +168,31 @@ def getPurchaseInfo():
     """
     if request.method == 'POST':  # 当以post方式提交数据时
         rangelist = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
-                     19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
+                     19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 44,
+                     45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60,
+                     61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74]
         num = random.randint(3, 5)
         list = random.sample(rangelist, num)
         listnum = len(list)
-        templist = []
         purchaseInfo = ""
         for i in range(listnum):
             temp = query_goods(list[i])
             if i == 0:
-                purchaseInfo = '{},{},{},{}'.format(temp.good_id, temp.name, random.randint(1, 5), temp.price)
+                purchaseInfo = '{},{},{},{},{}'.format(temp.good_id, temp.name, random.randint(1, 5), temp.price, temp.category)
             else:
-                purchaseInfo = '{},{}'.format(purchaseInfo,
-                                              '{},{},{},{}'.format(temp.good_id, temp.name, random.randint(1, 5),
-                                                                   temp.price))
+                purchaseInfo = '{},{}'.format(purchaseInfo, '{},{},{},{},{}'.format(temp.good_id, temp.name, random.randint(1, 5), temp.price, temp.category))
         return purchaseInfo
 
+@app.route('/get_user', methods=['GET', 'POST'])
+def get_user():
+    """
+    1.返回用户id
+    2.return:userid
+        type:str
+    """
+    if request.method == 'POST':  # 当以post方式提交数据时
+        global _userid
+        return str(_userid)
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_test():
@@ -80,10 +209,10 @@ def upload_test():
     # 获取图片文件并保存
     if request.method == 'POST':  # 当以post方式提交数据时
         print('PostRequest!')
-        data = request.form['data_url']
+        data=request.form['data_url']
         # data = request.get_data()
         # print(data[22:])
-        data = data[22:]
+        data=data[22:]
 
         # 将base64解码生成图片文件并保存
         imgdata = base64.b64decode(data)
@@ -94,6 +223,9 @@ def upload_test():
         # 识别人脸数据并返回信息
         user_info = face.face_search('FaceDetect/faces/face.jpg')
         print(user_info)
+        global _userid
+        _userid=int(user_info[2])
+        print(_userid)
         if user_info[0]:
             if user_info[1]:
                 # 图片中人脸太多，重新拍照
@@ -101,8 +233,8 @@ def upload_test():
             else:
                 # 找到了已经注册的用户
                 return "搜索到已存在用户！该用户信息为:\n user_id:%s\n name:%s\n" \
-                       " gender:%s\n age:%s\n phone_number:%s" \
-                       % (user_info[2], user_info[3], user_info[4], user_info[5], user_info[6])
+                      " gender:%s\n age:%s\n phone_number:%s" \
+                      % (user_info[2], user_info[3], user_info[4], user_info[5], user_info[6])
 
         elif user_info[1]:
             # 用户未注册，创建新用户
@@ -113,6 +245,7 @@ def upload_test():
             return "人脸检测失败！ 请检查控制台信息，网络连接和照片是否包含人脸。\n（或者faceset为空！\n或者为 faceset中搜索到已存在用户！数据库中未搜索到匹配用户）\n"
     # if request.method == 'GET':  # 当以post方式提交数据时
     return ''
+
 
 
 @app.route('/login', methods=["GET", "POST"])
@@ -173,7 +306,9 @@ def savePurchase():
                     total_price = data[i][key]
                 if key == "count":
                     count = data[i][key]
-            add_purchase_history(int(user_id), int(good_id), int(count), total_price, purchase_date)
+                if key == "category_id":
+                    category_id = data[i][key]
+            add_purchase_history(int(user_id), int(good_id), int(count), total_price, purchase_date, int(category_id), 1)
         return "success"
     else:
         return render_template("login.html")
@@ -193,6 +328,7 @@ def transReco():
     if request.method == "POST":
         # data获取用户id
         data = request.get_json()
+        print(data)
         # reco 临时存放推荐商品ID
         reco = ""
         # userid作为用户行为分析模块的入参
@@ -201,15 +337,17 @@ def transReco():
         for key in data:
             if key == "user_id":
                 userid = data[key]
+                print(userid)
+                print(type(userid))
             if key == "flag":
                 flag = int(data[key])
         if userid == "":
             return "failed to receive userid"
+        #异常处理模块,购买记录为空则无法推荐
         session = get_session()
         limit = len(session.query(Purchase_history).filter(
             Purchase_history.user_id == userid).all())
-        print(limit)
-        if limit < 6 and flag == 0:
+        if limit ==0 and flag == 0:
             return "error1"
         if flag == 0:
             reco = personalized_recommendation(int(userid))
@@ -217,15 +355,17 @@ def transReco():
         else:
             if flag == 1 or flag == 2 or flag == 3:
                 reco = multiple_recommendation(flag)
+        print(reco)
         num = len(reco)
         get_reco = ""
         for i in range(num):
-            goods_info = query_goods(reco[i])
-            price = str(Decimal(goods_info.price).quantize(Decimal('0.0')))
-            get_reco = get_reco + goods_info.name + "," + price + "," + goods_info.category + ","
+            goods_info=query_goods(reco[i])
+            price=str(Decimal(goods_info.price).quantize(Decimal('0.0')))
+            get_reco=get_reco+goods_info.name+","+price+","+goods_info.category+","
         return get_reco
     else:
         return render_template("login.html")
+
 
 
 # =============================================================================
@@ -945,5 +1085,5 @@ def average_month_consumption(res_dict, register_year, register_month, this_year
 
 if __name__ == '__main__':
     # app.run(debug=True, host="0.0.0.0", ssl_context=("/home/noob/ssl/server.crt", "/home/noob/ssl/server.key"))
-    app.run(debug=True, host="0.0.0.0")
-    # app.run(debug=True)
+    #app.run(debug=True, host="0.0.0.0")
+    app.run(debug=True)

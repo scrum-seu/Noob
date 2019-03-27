@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Noob - A New Retail Website</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta content="A featured website for unique shopping." name="description" />
+        <meta content="Noob" name="author" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+        <!-- App favicon -->
+        <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}" />
+
+        <!-- Icons css -->
+        <link href="{{ url_for('static', filename='libs/@mdi/font/css/materialdesignicons.min.css') }}" rel="stylesheet" type="text/css"/>
+        <link href="{{ url_for('static', filename='libs/dripicons/webfont/webfont.css') }}" rel="stylesheet" type="text/css"/>
+        <link href="{{ url_for('static', filename='libs/simple-line-icons/css/simple-line-icons.css') }}" rel="stylesheet" type="text/css"/>
+
+        <!-- App css -->
+        <!-- build:css -->
+        <link href="{{ url_for('static', filename='css/app.css') }}" rel="stylesheet" type="text/css"/>
+        <!-- endbuild -->
+    </head>
+
+    <body>
+
+        <!-- Begin page -->
+        <div id="wrapper">
+           <!-- Navigation Bar-->
+            <header id="topnav">
+                <nav class="navbar-custom">
+					<ul class="list-unstyled topbar-right-menu float-right mb-0">
+					    <li class="dropdown notification-list">
+                            <a href="javascript:void(0);" class="nav-link right-bar-toggle">
+                                <i class="dripicons-cloud noti-icon"> 新零售网站</i>
+                            </a>
+                        </li>
+					</ul>
+                    <ul class="list-unstyled menu-left mb-0">
+                        <li class="float-left">
+                            <a href="login" class="logo">
+                                <span class="logo-lg">
+                                    <img src="static/img/logo_sm.png" alt="" height="28">
+                                </span>
+                            </a>
+                        </li>
+						<li class="float-left">
+                            <a class="button-menu-mobile open-left navbar-toggle">
+                                <div class="lines">
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="app-search">
+                            <form>
+                                <input type="text" placeholder="" class="form-control" onfocus=this.blur()>
+                                <button type="submit" class="sr-only"></button>
+                            </form>
+                        </li>
+					</ul>
+                </nav>
+                <!-- end navbar-custom -->
+            </header>
+            <!-- End Navigation Bar-->
+
+            <!-- ========== Left Sidebar Start ========== -->
+            <div class="left-side-menu">
+                <div class="slimscroll-menu">
+                    <!--- Sidemenu -->
+                    <div id="sidebar-menu">
+                        <ul class="metismenu" id="side-menu">
+                            <li class="menu-title">Navigation</li>
+                            <li>
+                                <a href="login">
+                                    <i class="mdi mdi-view-dashboard"></i> <span> Index </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="video">
+                                    <i class="mdi mdi-calendar"></i> <span> customer </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="chart-chartist">
+                                    <i class="mdi mdi-chart-donut-variant"></i> <span> static </span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- Sidebar -->
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+            <!-- Left Sidebar End -->
+
+
+            <!-- Page Content Start -->
+            <div class="content-page">
+                <div class="content">
+                    <div class="container-fluid">
+
+                        <!-- Page title box -->
+                        <div class="page-title-box">
+                            <h4 class="page-title">Customer</h4>
+                        </div>
+                        <!-- End page title box -->
+                        <video id="v" style="width:200px;height:150px;"></video>
+                        <canvas id="canvas" style="display:none;width:200px;height:150px;"></canvas>
+                        <button type="button" class="btn btn-light" id="tp">tp</button>
+                        <a href="customer">
+                            <button type="button" class="btn btn-light" disabled="true" id="upload">upload</button>
+                        </a>
+                        <script>
+                        var t;
+                        var videoPlaying = false;
+                        var take = false;
+                        let v = document.getElementById('v');
+                        let canvas = document.getElementById('canvas');
+                            // {#显示摄像头控件，隐藏图片控件#}
+                            v.style.display = 'block';
+                            canvas.style.display = 'none';
+
+                            // 老的浏览器可能根本没有实现 mediaDevices，所以我们可以先设置一个空的对象
+                            if (navigator.mediaDevices === undefined) {
+                                navigator.mediaDevices = {};
+                            }
+                            if (navigator.mediaDevices.getUserMedia === undefined) {
+                                navigator.mediaDevices.getUserMedia = function (constraints) {
+                                    // 首先，如果有getUserMedia的话，就获得它
+                                    var getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+
+                                    // 一些浏览器根本没实现它 - 那么就返回一个error到promise的reject来保持一个统一的接口
+                                    if (!getUserMedia) {
+                                        return Promise.reject(new Error('getUserMedia is not implemented in this browser'));
+                                    }
+
+                                    // 否则，为老的navigator.getUserMedia方法包裹一个Promise
+                                    return new Promise(function (resolve, reject) {
+                                        getUserMedia.call(navigator, constraints, resolve, reject);
+                                    });
+                                }
+                            }
+                            const constraints = {
+                                video: true,
+                                audio: false
+
+                            };
+                            let promise = navigator.mediaDevices.getUserMedia(constraints);
+                            promise.then(stream => {
+                                t = stream.getTracks()[0];
+                                // 旧的浏览器可能没有srcObject
+                                if ("srcObject" in v) {
+                                    v.srcObject = stream;
+                                } else {
+                                    // 防止再新的浏览器里使用它，应为它已经不再支持了
+                                    v.src = window.URL.createObjectURL(stream);
+                                }
+                                v.onloadedmetadata = function (e) {
+                                    v.play();
+                                    videoPlaying = true;
+                                };
+                            }).catch(err => {
+                                console.error(err.name + ": " + err.message);
+                            });
+                        // {#调用摄像头同时设置拍照按钮方法#}
+                        document.getElementById('tp').addEventListener('click', function () {
+                            if (videoPlaying) {
+                                canvas.width = v.videoWidth;
+                                canvas.height = v.videoHeight;
+                                canvas.getContext('2d').drawImage(v, 0, 0);
+                                let data = canvas.toDataURL('image/webp');
+                                // {#document.getElementById('photo').setAttribute('src', data);#}
+
+                                // {#                显示图片控件，隐藏摄像头控件#}
+                                t.stop();
+                                videoPlaying = false;
+                                v.style.display = 'none';
+                                canvas.style.display = 'block';
+                                take = true;
+
+                            } else {
+                                alert("请打开摄像头");
+                            }
+                            document.getElementById("upload").disabled=false;
+                              if (take) {
+                                let data = canvas.toDataURL('image/png');
+                                let flag = 0;
+
+                                $.ajax({
+                                    url: '/upload',
+                                    cache: false,
+                                    type: 'post',
+                                    data: {
+                                        'data_url': data,
+                                    },
+                                    dataType: 'text',
+                                    success: function (data) {
+                                    console.log(data)
+                                    },
+                                    error: function (e) {
+                                    }
+                                });
+                              }
+                        }, false);
+                        </script>
+
+                    </div> <!-- end container-fluid-->
+                </div> <!-- end contant-->
+            </div>
+            <!-- End Page Content-->
+
+
+            <!-- Footer -->
+            <footer class="footer">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-12 text-center">
+                            2018 © Noob. - NoobManage.com
+                        </div>
+                    </div>
+                </div>
+            </footer>
+            <!-- End Footer -->
+        </div>
+        <!-- End #wrapper -->
+
+        <!-- jQuery  -->
+        <script src="{{ url_for('static',filename='libs/jquery/jquery.min.js') }}"></script>
+        <script src="{{ url_for('static',filename='libs/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+        <script src="{{ url_for('static',filename='libs/jquery-slimscroll/jquery.slimscroll.min.js') }}"></script>
+        <script src="{{ url_for('static',filename='libs/metismenu/metisMenu.min.js') }}"></script>
+
+        <!-- App js -->
+        <script src="{{ url_for('static',filename='js/jquery.core.js') }}"></script>
+        <script src="{{ url_for('static',filename='js/jquery.app.js') }}"></script>
+    </body>
+</html>

@@ -109,106 +109,9 @@
                     <div class="container-fluid">
                         <!-- Page title box -->
                         <div class="page-title-box">
-                            <h4 class="page-title">Noob</h4>
+                            <h4 class="page-title">Customer</h4>
                         </div>
                         <!-- End page title box -->
-                        <div class="row">
-                            <div class="col-xl-4">
-                                <div class="card-box">
-									<h4 class="header-title">User</h4>
-									<video id="v" style="width:200px;height:150px;"></video>
-									<canvas id="canvas" style="display:none;width:200px;height:150px;"></canvas>
-									<canvas id="lineChart1" height="1"></canvas>
-                                    <div class="btn-group mb-2">
-                                        <button type="button" class="btn btn-light" id="start">open</button>
-                                        <button type="button" class="btn btn-light" id="tp">tp</button>
-                                        <button type="button" class="btn btn-light" id="upload">upload</button>
-                                    </div>
-                                    <script src="{{ url_for('static',filename='js/photo.js') }}"></script>
-                                </div><!-- end card-box-->
-        						<div class="card-box">
-									<div class="media">
-                                        <img class="mr-3 rounded-circle bx-shadow-lg" src="static/img/users/avatar-4.jpg" alt="Generic placeholder image" height="80">
-                                        <div class="media-body">
-                                            <p><i class="mdi mdi-stop-circle-outline text-success"></i> open the video, adjust the angle</p>
-											<p><i class="mdi mdi-stop-circle-outline text-danger"></i> tp and upload</p>
-                                        </div>
-                                    </div>
-								</div>
-                            </div> <!-- end col -->
-
-                            <div class="col-xl-4">
-                                <div class="card-box">
-									<h4 class="header-title">Message</h4>
-									<form role="form">
-										<div class="form-group">
-											<textarea class="form-control" rows="8" id="detectinfo" onfocus=this.blur()></textarea>
-										</div>
-										<canvas id="lineChart2" height="20"></canvas>
-									</form>
-                                </div> <!-- end card-box-->
-								<div class="card-box widget-chart-one gradient-success bx-shadow-lg">
-                                    <div class="float-left">
-                                        <input data-displayInput=false data-plugin="knob" data-width="80" data-height="80" data-linecap=round
-                                                data-fgColor="#ffffff" data-bgcolor="rgba(255,255,255,0.2)" data-skin="tron" data-angleOffset="180"
-                                                data-readOnly=true data-thickness=".1"/>
-                                    </div>
-                                    <div class="widget-chart-one-content text-right">
-                                        <p class="text-white mb-0 mt-2">Service</p>
-                                        <h3 class="text-white">100%</h3>
-                                    </div>
-                                </div> <!-- end card-box-->
-                            </div> <!-- end col -->
-
-                            <div class="col-xl-4">
-                                <div class="card-box">
-                                    <h4 class="header-title m-t-0">Basic Form</h4>
-									<p><i class="mdi mdi-stop-circle text-success"></i> Add new user or show old user</p>
-                                    <form role="form">
-                                        <div class="form-group row">
-                                            <label for="u_userid" class="col-sm-4 col-form-label">Id<span class="text-danger">*</span></label>
-                                            <div class="col-sm-7">
-                                                <input id="u_userid" type="number" placeholder="Id" class="form-control" min="0">
-                                            </div>
-                                        </div>
-                                        <div class="form-group row">
-                                            <label for="u_name" class="col-sm-4 col-form-label">Name<span class="text-danger">*</span></label>
-                                            <div class="col-sm-7">
-                                                <input id="u_name" type="text" placeholder="Name" class="form-control">
-                                            </div>
-                                        </div>
-                                        <div class="form-group row">
-                                            <label for="u_sex" class="col-sm-4 col-form-label">Sex<span class="text-danger">*</span></label>
-                                            <div class="col-sm-7">
-                                                <input id="u_sex" type="text" placeholder="Sex" class="form-control">
-                                            </div>
-                                        </div>
-										<div class="form-group row">
-                                            <label for="u_age" class="col-sm-4 col-form-label">Age<span class="text-danger">*</span></label>
-                                            <div class="col-sm-7">
-                                                <input id="u_age" type="number" placeholder="Age" class="form-control" min="1" max="100">
-                                            </div>
-                                        </div>
-										<div class="form-group row">
-                                            <label for="u_number" class="col-sm-4 col-form-label">Number<span class="text-danger">*</span></label>
-                                            <div class="col-sm-7">
-                                                <input id="u_number" type="tel" placeholder="Number" class="form-control" maxlength="11">
-                                            </div>
-                                        </div>
-                                        <div class="form-group row">
-                                            <div class="col-8 offset-4">
-                                                <button type="button" class="btn btn-primary waves-effect waves-light" id="submit" onclick="onSubmit()">
-                                                    Register
-                                                </button>
-                                            </div>
-											<canvas id="lineChart3" height="30"></canvas>
-                                        </div>
-                                    </form>
-                                </div>  <!-- end card-box-->
-                            </div> <!-- end col -->
-                        </div>
-                        <!-- end row -->
-
                         <div class="row">
                             <div class="col-xl-3">
                                 <div class="card-box">
@@ -224,9 +127,8 @@
                                     </div>
                                     <div class="pull-in margin-m-b-20">
 										<div class="button-list">
-											<button type="button" class="btn btn-primary btn-sm" onclick="GetPurchaseData()">Summar</button>
-											<button type="button" class="btn btn-success btn-sm" style="float:right" disabled="true" id="settle"
-												onclick="GetTableData()">Settle</button>
+											<button type="button" class="btn btn-success btn-sm" id="settle"
+												onclick="NewGetTableData()">Settle</button>
 										</div>
                                     </div>
                                 </div> <!-- end card-box-->
@@ -303,46 +205,6 @@
                                             <tr>
                                                 <td>
                                                     <span class="ml-2">6</span>
-                                                </td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <span class="ml-2">7</span>
-                                                </td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <span class="ml-2">8</span>
-                                                </td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <span class="ml-2">9</span>
-                                                </td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <span class="ml-2">10</span>
                                                 </td>
                                                 <td></td>
                                                 <td></td>
@@ -449,7 +311,9 @@
                                     <div class="chartjs-chart datauses-area">
                                         <img src="static/img/NoobMobile_public.jpg" alt="" height="128">
                                     </div>
-									<button type="button" class="btn btn-danger btn-sm" onclick="window.location.reload()">Next Purchase</button>
+                                    <a href="video">
+									    <button type="button" class="btn btn-danger btn-sm">Next Purchase</button>
+                                    </a>
                                 </div> <!-- end card-box-->
                             </div> <!-- end col-->
                         </div>
@@ -502,11 +366,14 @@
         <script src="{{ url_for('static',filename='js/utf.js') }}"></script>
         <script src="{{ url_for('static',filename='js/jquery.qrcode.js') }}"></script>
 		<script src="{{ url_for('static',filename='js/sendMessage.js') }}"></script>
+        <script src="{{ url_for('static',filename='js/event.js') }}"></script>
+        <script type="text/javascript">
+            setInterval("getGoodsInfo()", 500);
+        </script>
         <script>
             $(document).ready(function() {
                 // Default Datatable
                 $('#datatable').DataTable({
-                    "pageLength": 5,
                     "searching": false,
                     "lengthChange": false,
                     "sort":false,
@@ -537,6 +404,16 @@
 					 background : "#ffffff",       //二维码的后景色
 					 foreground : "#000000",        //二维码的前景色
 				});
+               $.ajax({
+                    type: 'POST',
+                    url: '/get_user',
+                    contentType: 'application/json',
+                    success: function(data){
+                        console.log(data)
+                        document.getElementById("userid").innerText=data
+                    },
+                    error: function(jqXHR){console.log(jqXHR)},
+                })
             } );
         </script>
     </body>
