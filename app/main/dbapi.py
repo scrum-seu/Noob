@@ -1,4 +1,4 @@
-from app.models.models import get_session, User, Goods, Purchase_history, Goods_category, Goods_comment, Like_info
+from app.models.models import get_session, User, Goods, Purchase_history, Goods_category, Goods_comment, Like_info, Shopping_record
 
 """
 ==================================================================

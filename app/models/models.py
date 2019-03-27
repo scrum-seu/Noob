@@ -194,6 +194,31 @@ class Like_info(Base):
         return "<goods_like_info: {}>".format(self.like_id)
 
 
+class Shopping_record(Base):
+    """
+        shopping_record map the shopping_record in mysql database
+        """
+    __tablename__ = 'shopping_record'
+    id = Column(Integer, primary_key=True)
+    card_id = Column(String)
+    good_id = Column(Integer)
+
+    def getinfo(self):
+        """
+
+        :return:
+        """
+        shopping_record_info = {
+            'id': self.id,
+            'card_id': self.card_id,
+            'good_id': self.good_id,
+        }
+        return shopping_record_info
+
+    def __repr__(self):
+        return "<shopping_record_info: {}>".format(self.card_id)
+
+
 def get_session():
     """
     建立连接，获取数据库会话
