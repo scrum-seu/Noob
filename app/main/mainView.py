@@ -309,6 +309,7 @@ def get_recommend_info():
     else:
         return None
 
+
 @app.route('/get_like_and_comments', methods=["GET", "POST"])
 def get_like_and_comments():
     """
@@ -382,6 +383,7 @@ def get_like_and_comments():
     else:
         return None
 
+
 @app.route("/insert_like_info", methods=["GET", "POST"])
 def insert_like_info():
     """
@@ -411,6 +413,7 @@ def insert_like_info():
             return None
     else:
         return None
+
 
 @app.route("/delete_like_info", methods=["GET", "POST"])
 def delete_like_info():
@@ -442,31 +445,72 @@ def delete_like_info():
     else:
         return None
 
-@app.route('/recommend', methods=["GET", "POST"])
-def recommend():
+
+# @app.route('/recommend', methods=["GET", "POST"])
+# def recommend():
+#     """
+#     获取小程序请求，返回推荐信息
+#     :return:success: res_dict{"recommends": [{goods.get_info()字典数据}, ...]}
+#              fail: None(没有商品推荐目前也是None，后期待改为常规推荐)
+#     """
+#     if request.method == "POST":
+#         try:
+#             user_id = request.get_json()["user_id"]
+#             assert user_id, "the acquired user_id is error"
+#             # 通过user_id，获得用户推荐
+#             recommends = multiple_recommendation()
+#             if 0 == len(recommends):  # 待改，可以进行常规商品推荐
+#                 return None
+#             else:
+#                 res_dict = {}
+#                 rec_list = []
+#                 for rec in recommends:  # rec商品id
+#                     goods = query_goods(rec)
+#                     rec_list.append(goods.getinfo())
+#                 res_dict["recommends"] = rec_list
+#                 return json.dumps(res_dict, cls=DecimalEncoder)
+#         except Exception as e:
+#             print("error: {}\n get recommends failed!".format(e))
+#             return None
+#     else:
+#         return None
+
+
+@app.route("/get_like_info", methods=["GET", "POST"])
+def get_like_info():
     """
-    获取小程序请求，返回推荐信息
-    :return:success: res_dict{"recommends": [{goods.get_info()字典数据}, ...]}
-             fail: None(没有商品推荐目前也是None，后期待改为常规推荐)
+    获取用户喜欢的所有商品信息
+    :return: res_dict = {"data": [{good_id:
+                                   good_name:
+                                   ...:
+                                   }],...}
+             失败返回： None
     """
     if request.method == "POST":
         try:
-            user_id = request.get_json()["user_id"]
-            assert user_id, "the acquired user_id is error"
-            # 通过user_id，获得用户推荐
-            recommends = multiple_recommendation()
-            if 0 == len(recommends):  # 待改，可以进行常规商品推荐
-                return None
-            else:
-                res_dict = {}
-                rec_list = []
-                for rec in recommends:  # rec商品id
-                    goods = query_goods(rec)
-                    rec_list.append(goods.getinfo())
-                res_dict["recommends"] = rec_list
-                return json.dumps(res_dict, cls=DecimalEncoder)
+            req_data = request.get_json()
+            user_id = req_data["user_id"]
         except Exception as e:
-            print("error: {}\n get recommends failed!".format(e))
+            print(e)
+            print(
+                "request the function paramters of get_like_info failed!"
+            )
+            return None
+        try:
+            res_dict = {}
+            res_list = []
+            goods = get_session().query(Goods).join(Like_info, Like_info.good_id == Goods.good_id).\
+                filter(Like_info.user_id == user_id).all()  # 获取用户喜欢的所有商品信息
+            for good in goods:
+                item_dict = good.getinfo()
+                # 添加一个商品信息及推荐类型
+                res_list.append(item_dict)
+            res_dict["data"] = res_list
+            # 返回字符串化结果字典
+            return json.dumps(res_dict, cls=DecimalEncoder)
+            # return json.dumps(res_dict)
+        except Exception as e:
+            print("error: {}\n failed to get SQL of like_info!".format(e))
             return None
     else:
         return None
