@@ -381,7 +381,7 @@ def query_like_info(user_id=-1):
     return likes
 
 
-def delete_like_info(user_id, good_id):
+def delete_like(user_id, good_id):
     """
     输入user_id和good_id，删除like_info中指定的一行用户喜欢
     :param user_id:

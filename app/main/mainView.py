@@ -435,7 +435,7 @@ def delete_like_info():
             return None
         try:
             res_dict = {}
-            delete_like_info(user_id, good_id)
+            delete_like(user_id, good_id)
             res_dict["success"] = "yes"
             # 返回字符串化结果字典
             return json.dumps(res_dict, cls=DecimalEncoder)
