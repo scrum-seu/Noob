@@ -375,7 +375,7 @@ def get_like_and_comments():
                 cmt_dict['txt'] = i[3]
                 cmt_list.append(cmt_dict)
             res_dict['comments'] = cmt_list
-            json.dumps(res_dict)
+            return json.dumps(res_dict)
         except Exception as e:
             print("error: {}\n get user info failed! Error type biomarker get!".format(e))
             return None
@@ -397,7 +397,7 @@ def insert_like_info():
         except Exception as e:
             print(e)
             print(
-                "request the function paramters of delete_like_info failed!"
+                "request the function paramters of insert_like_info failed!"
             )
             return None
         try:
@@ -835,18 +835,14 @@ def get_like_info():
             res_list = []
             goods = get_session().query(Goods).join(Like_info, Like_info.good_id == Goods.good_id).\
                 filter(Like_info.user_id == user_id).all()  # 获取用户喜欢的所有商品信息
-            personalized_recos = personalized_recommendation(user_id)
-            routine_recos = multiple_recommendation(1)
-            quarter_recos = multiple_recommendation(2)
-            hot_recos = multiple_recommendation(3)
             for good in goods:
-                recommend_category = []  # 推荐类别
                 item_dict = good.getinfo()
                 # 添加一个商品信息及推荐类型
                 res_list.append(item_dict)
             res_dict["data"] = res_list
             # 返回字符串化结果字典
             return json.dumps(res_dict, cls=DecimalEncoder)
+            # return json.dumps(res_dict)
         except Exception as e:
             print("error: {}\n failed to get SQL of like_info!".format(e))
             return None
