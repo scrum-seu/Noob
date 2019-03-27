@@ -376,7 +376,7 @@ def get_like_and_comments():
                 cmt_dict['txt'] = i[3]
                 cmt_list.append(cmt_dict)
             res_dict['comments'] = cmt_list
-            json.dumps(res_dict)
+            return json.dumps(res_dict)
         except Exception as e:
             print("error: {}\n get user info failed! Error type biomarker get!".format(e))
             return None
@@ -399,7 +399,7 @@ def insert_like_info():
         except Exception as e:
             print(e)
             print(
-                "request the function paramters of delete_like_info failed!"
+                "request the function paramters of insert_like_info failed!"
             )
             return None
         try:
@@ -410,6 +410,43 @@ def insert_like_info():
             return json.dumps(res_dict, cls=DecimalEncoder)
         except Exception as e:
             print("error: {}\n failed to add SQL of like_info!".format(e))
+            return None
+    else:
+        return None
+
+
+@app.route("/insert_comment", methods=["GET", "POST"])
+def insert_comment():
+    """
+    新增一条用户对某个商品的评论
+    :return: res_dict = {"success": "yes"}
+             失败返回： None
+    """
+    if request.method == "POST":
+        try:
+            req_data = request.get_json()
+            user_id = req_data["user_id"]
+            good_id = req_data["good_id"]
+            txt = req_data["content"]
+            gender = req_data["gender"]
+            time = req_data["time"]
+            name = req_data["name"]
+
+
+        except Exception as e:
+            print(e)
+            print(
+                "request the function paramters of insert_comment failed!"
+            )
+            return None
+        try:
+            res_dict = {}
+            add_goods_comment(user_id=user_id, good_id=good_id, content=txt, time=time, name=name, gender=gender)
+            res_dict["success"] = "yes"
+            # 返回字符串化结果字典
+            return json.dumps(res_dict, cls=DecimalEncoder)
+        except Exception as e:
+            print("error: {}\n failed to add SQL of insert_comment!".format(e))
             return None
     else:
         return None
@@ -435,7 +472,7 @@ def delete_like_info():
             return None
         try:
             res_dict = {}
-            delete_like_info(user_id, good_id)
+            delete_like(user_id, good_id)
             res_dict["success"] = "yes"
             # 返回字符串化结果字典
             return json.dumps(res_dict, cls=DecimalEncoder)
@@ -499,7 +536,7 @@ def get_like_info():
         try:
             res_dict = {}
             res_list = []
-            goods = get_session().query(Goods).join(Like_info, Like_info.good_id == Goods.good_id).\
+            goods = get_session().query(Goods).join(Like_info, Like_info.good_id == Goods.good_id). \
                 filter(Like_info.user_id == user_id).all()  # 获取用户喜欢的所有商品信息
             for good in goods:
                 item_dict = good.getinfo()
@@ -852,50 +889,6 @@ def face_login():
     except Exception as e:
         print("error: {}\n failed to detect face and return the result!".format(e))
         return None
-
-
-# @app.route("/get_like_info", methods=["GET", "POST"])
-# def get_like_info():
-#     """
-#     获取用户喜欢的所有商品信息
-#     :return: res_dict = {"data": [{good_id:
-#                                    good_name:
-#                                    ...:
-#                                    }],...}
-#              失败返回： None
-#     """
-#     if request.method == "POST":
-#         try:
-#             req_data = request.get_json()
-#             user_id = req_data["user_id"]
-#         except Exception as e:
-#             print(e)
-#             print(
-#                 "request the function paramters of get_like_info failed!"
-#             )
-#             return None
-#         try:
-#             res_dict = {}
-#             res_list = []
-#             goods = get_session().query(Goods).join(Like_info, Like_info.good_id == Goods.good_id).\
-#                 filter(Like_info.user_id == user_id).all()  # 获取用户喜欢的所有商品信息
-#             personalized_recos = personalized_recommendation(user_id)
-#             routine_recos = multiple_recommendation(1)
-#             quarter_recos = multiple_recommendation(2)
-#             hot_recos = multiple_recommendation(3)
-#             for good in goods:
-#                 recommend_category = []  # 推荐类别
-#                 item_dict = good.getinfo()
-#                 # 添加一个商品信息及推荐类型
-#                 res_list.append(item_dict)
-#             res_dict["data"] = res_list
-#             # 返回字符串化结果字典
-#             return json.dumps(res_dict, cls=DecimalEncoder)
-#         except Exception as e:
-#             print("error: {}\n failed to get SQL of like_info!".format(e))
-#             return None
-#     else:
-#         return None
 
 
 # =========================================================================

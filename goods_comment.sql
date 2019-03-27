@@ -11,7 +11,7 @@
  Target Server Version : 50721
  File Encoding         : 65001
 
- Date: 26/03/2019 16:03:19
+ Date: 27/03/2019 11:42:42
 */
 
 SET NAMES utf8mb4;
@@ -36,8 +36,8 @@ CREATE TABLE `goods_comment` (
 -- Records of goods_comment
 -- ----------------------------
 BEGIN;
-INSERT INTO `goods_comment` VALUES (1, 27, 9, '非常精彩的一本书', 1, '2019-03-26 11:02:04', '叶帅');
-INSERT INTO `goods_comment` VALUES (2, 27, 10, '很好看！', 1, '2019-03-15 11:03:24', '李天三');
+INSERT INTO `goods_comment` VALUES (1, 27, 9, '非常精彩的一本书', 1, '2019-03-26 11:02:04', 'ysssgdhr');
+INSERT INTO `goods_comment` VALUES (2, 27, 10, '很好看！', 1, '2019-03-15 11:03:24', '仁者');
 COMMIT;
 
 SET FOREIGN_KEY_CHECKS = 1;
