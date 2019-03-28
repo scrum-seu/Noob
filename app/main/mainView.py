@@ -1,6 +1,4 @@
-# import sys
-# sys.path.append("/home/noob/Noob/")
-from flask import Flask, render_template, request
+from flask import Flask, request
 from flask import render_template
 from app.main.dbapi import *
 
@@ -17,6 +15,9 @@ import json
 import datetime
 import decimal
 import random
+import sys
+sys.path.append("/home/noob/Noob/")
+
 
 # 初始化获取用户id
 _userId = 0
@@ -648,36 +649,6 @@ def delete_like_info():
         return None
 
 
-# @app.route('/recommend', methods=["GET", "POST"])
-# def recommend():
-#     """
-#     获取小程序请求，返回推荐信息
-#     :return:success: res_dict{"recommends": [{goods.get_info()字典数据}, ...]}
-#              fail: None(没有商品推荐目前也是None，后期待改为常规推荐)
-#     """
-#     if request.method == "POST":
-#         try:
-#             user_id = request.get_json()["user_id"]
-#             assert user_id, "the acquired user_id is error"
-#             # 通过user_id，获得用户推荐
-#             recommends = multiple_recommendation()
-#             if 0 == len(recommends):  # 待改，可以进行常规商品推荐
-#                 return None
-#             else:
-#                 res_dict = {}
-#                 rec_list = []
-#                 for rec in recommends:  # rec商品id
-#                     goods = query_goods(rec)
-#                     rec_list.append(goods.getinfo())
-#                 res_dict["recommends"] = rec_list
-#                 return json.dumps(res_dict, cls=DecimalEncoder)
-#         except Exception as e:
-#             print("error: {}\n get recommends failed!".format(e))
-#             return None
-#     else:
-#         return None
-
-
 @app.route("/get_like_info", methods=["GET", "POST"])
 def get_like_info():
     """
@@ -1103,5 +1074,5 @@ def average_month_consumption(res_dict, register_year, register_month, this_year
 
 if __name__ == '__main__':
     # app.run(debug=True, host="0.0.0.0", ssl_context=("/home/noob/ssl/server.crt", "/home/noob/ssl/server.key"))
-    # app.run(debug=True, host="0.0.0.0")
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0", port="5555")
+    # app.run(debug=True)
