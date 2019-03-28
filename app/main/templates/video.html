@@ -196,8 +196,23 @@
                                     },
                                     dataType: 'text',
                                     success: function (data) {
-                                    console.log(data)
-                                    document.getElementById("upload").disabled=false;
+                                        var arr=data.split("\n");
+                                         //length=6,检测到已注册用户
+                                        if (arr.length==6){
+                                            document.getElementById("upload").disabled=false;
+                                        }
+                                        else{
+                                            // length=3,新用户仅返回用户id
+                                            if(arr.length==3){
+                                                document.getElementById("upload").disabled=false;
+                                            }
+                                            // length=1,4人脸检测失败
+                                            else{
+                                                if(arr.length==1||arr.length==4){
+                                                    alert("人脸检测失败,请重新拍照!")
+                                                }
+                                            }
+                                        }
                                     },
                                     error: function (e) {
                                     }

@@ -408,8 +408,7 @@
                     type: 'POST',
                     url: '/get_user',
                     contentType: 'application/json',
-                    success: function(data){
-                        console.log(data)
+                        success: function(data){
                         document.getElementById("userid").innerText=data
                     },
                     error: function(jqXHR){console.log(jqXHR)},
