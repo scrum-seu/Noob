@@ -65,32 +65,47 @@ def custindex():
 
 @app.route('/goods_info', methods=['GET', 'POST'])
 def goods_info():
+    """
+
+    :return: 若记录发生变化，返回-1；否则返回变化后的记录
+    """
+    # 全局变量记录条数是否变化
     global Len
     if request.method == 'POST':
+        # 数据库会话
         session = get_session()
+        # 获取购物车商品列表
         shopping_record_list = session.query(Shopping_record).all()
+        # 条数发生变化
         if Len != len(shopping_record_list):
             return_str = ''
             count_dict = {}
             str_dict = {}
             Len = len(shopping_record_list)
             for item in shopping_record_list:
+                # 读取商品信息
                 good_info = session.query(Goods).filter(Goods.good_id == item.good_id).one()
+                # 叠加商品数量
                 if good_info.good_id in count_dict:
                     count_dict[good_info.good_id] += 1
+                    # 返回值用','分割元素,';'分割对象
                     str_dict[good_info.good_id] = str(good_info.good_id) + ',' + str(good_info.name) + ',' + str(
                         count_dict[good_info.good_id]) + ',' + str(good_info.price) + ',' + str(
                         good_info.category) + ';'
+                # 初始化商品
                 else:
                     count_dict[good_info.good_id] = 1
+                    # 返回值用','分割元素,';'分割对象
                     str_dict[good_info.good_id] = str(good_info.good_id) + ',' + str(good_info.name) + ',' + str(
                         count_dict[good_info.good_id]) + ',' + str(good_info.price) + ',' + str(
                         good_info.category) + ';'
             for key in str_dict:
                 return_str += str_dict[key]
+            # 关闭会话
             session.close()
             return return_str
         else:
+            # 关闭会话
             session.close()
             return '-1'
     else:
