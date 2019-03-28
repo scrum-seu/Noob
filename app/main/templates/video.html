@@ -106,8 +106,8 @@
                             <h4 class="page-title">Customer</h4>
                         </div>
                         <!-- End page title box -->
-                        <video id="v" style="width:200px;height:150px;"></video>
-                        <canvas id="canvas" style="display:none;width:200px;height:150px;"></canvas>
+                        <video id="v" style="width:600px;height:450px;"></video>
+                        <canvas id="canvas" style="display:none;width:600px;height:450px;"></canvas>
                         <button type="button" class="btn btn-light" id="tp">tp</button>
                         <a href="customer">
                             <button type="button" class="btn btn-light" disabled="true" id="upload">upload</button>
@@ -183,7 +183,6 @@
                             } else {
                                 alert("请打开摄像头");
                             }
-                            document.getElementById("upload").disabled=false;
                               if (take) {
                                 let data = canvas.toDataURL('image/png');
                                 let flag = 0;
@@ -198,6 +197,7 @@
                                     dataType: 'text',
                                     success: function (data) {
                                     console.log(data)
+                                    document.getElementById("upload").disabled=false;
                                     },
                                     error: function (e) {
                                     }

@@ -172,7 +172,7 @@ function GetTableData(){
         contentType: 'application/json',
         success: function(data){
             console.log(data)
-            document.getElementById("settle").disabled=false;
+            document.getElementById("settle").disabled=true;
         },
         error: function(jqXHR){console.log(jqXHR)},
     })
