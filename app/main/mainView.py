@@ -223,15 +223,15 @@ def upload_test():
         # 识别人脸数据并返回信息
         user_info = face.face_search('FaceDetect/faces/face.jpg')
         print(user_info)
-        global _userid
-        _userid=int(user_info[2])
-        print(_userid)
         if user_info[0]:
             if user_info[1]:
                 # 图片中人脸太多，重新拍照
                 return "照片中人脸多于1张，请重新拍摄！"
             else:
                 # 找到了已经注册的用户
+                global _userid
+                _userid = int(user_info[2])
+                print(_userid)
                 return "搜索到已存在用户！该用户信息为:\n user_id:%s\n name:%s\n" \
                       " gender:%s\n age:%s\n phone_number:%s" \
                       % (user_info[2], user_info[3], user_info[4], user_info[5], user_info[6])
