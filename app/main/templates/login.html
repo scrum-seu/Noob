@@ -504,6 +504,46 @@
 		<script src="{{ url_for('static',filename='js/sendMessage.js') }}"></script>
         <script>
             $(document).ready(function() {
+                $.ajax({
+                    type: 'POST',
+                    url: '/initinfo',
+                    contentType: 'application/json',
+                    success: function(data){
+                        var arr=data.split(",");
+                        var num=arr.length;
+                        var str=""
+                        var col1=1;
+                        var col3=1;
+                        var col2=1;
+                        for(var i=0;i<arr.length;i++){
+                            if(i%3==0)
+                            {
+                                if(arr[i]!="")
+                                {
+                                    document.getElementById("showdata").rows[col1].cells[1].innerHTML=arr[i];
+                                    col1=col1+1;
+                                }
+                            }
+                            else
+                            {
+                                if(i%3==1&&arr[i]!="")
+                                {
+                                        document.getElementById("showdata").rows[col2].cells[2].innerHTML=arr[i];
+                                        col2=col2+1;
+                                }
+                                else
+                                {
+                                    if(arr[i]!="")
+                                    {
+                                        document.getElementById("showdata").rows[col3].cells[3].innerHTML=arr[i];
+                                        col3=col3+1;
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    error: function(jqXHR){console.log(jqXHR)},
+                })
                 // Default Datatable
                 $('#datatable').DataTable({
                     "pageLength": 5,

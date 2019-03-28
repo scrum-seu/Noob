@@ -182,6 +182,25 @@ def init():
         return render_template("login.html")
 
 
+@app.route('/initinfo', methods=["GET", "POST"])
+def init_info():
+    """
+    初始化接收post请求，返回常规推荐
+    :return:str
+    """
+    if request.method == "POST":
+        recommend = multiple_recommendation(1)
+        num = len(recommend)
+        get_recommend = ""
+        for i in range(num):
+            good_info = query_goods(recommend[i])
+            price = str(Decimal(good_info.price).quantize(Decimal('0.0')))
+            get_recommend = get_recommend + good_info.name + "," + price + "," + good_info.category + ","
+        return get_recommend
+    else:
+        return render_template("login.html")
+
+
 @app.route('/purchase', methods=['GET', 'POST'])
 def get_buy_info():
     """
