@@ -6,11 +6,11 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 mysql_config = {
     'Database': 'mysql',
     'dataconnector': 'pymysql',
-    'admin': 'root',
+    'admin': 'noob',
     'password': '123456',
-    'ip': 'localhost',
+    'ip': '139.217.8.185',
     'port': '3306',
-    'database': 'hhh',
+    'database': 'ScrumFaceDetect',
     'charset': 'utf8'
 }
 
