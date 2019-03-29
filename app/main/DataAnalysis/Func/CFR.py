@@ -167,7 +167,10 @@ def calculateSimilarItems(prefs, n=10):
 
 # 利用相似列，对某一行的各列进行估值，（估计影片评分，并排名推荐）：根据偏好数据集和提前构造好的物品匹配库，向用户推荐物品
 def getRecommendedItems(prefs, itemMatch, row_name):
-    onerow = prefs[row_name]  # 获取当前行所拥有的列
+    if row_name in prefs:
+        onerow = prefs[row_name]  # 获取当前行所拥有的列
+    else:
+        return {}
     scores = {}
     totalSim = {}
     rankings = {}
