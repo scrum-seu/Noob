@@ -50,6 +50,8 @@ def personalized_recommendation(user_id):
     # 利用相似物品推荐相似物品
     itemMatch = calculateSimilarItems(prefs)  # 提前计算所有物品的相似物品
     ranking_dict = getRecommendedItems(prefs, itemMatch, row_name=user_id)
+    if ranking_dict:
+        return []
     for item in ranking_dict:
         if category_dict[str(item)] in tag_weight_list:
             ranking_dict[item] *= 1.25
@@ -66,4 +68,4 @@ def personalized_recommendation(user_id):
 
 
 if __name__ == '__main__':
-    print(personalized_recommendation(9))
+    print(personalized_recommendation(111))
